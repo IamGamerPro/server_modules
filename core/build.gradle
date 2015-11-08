@@ -1,0 +1,13 @@
+group 'pro.iamgamer'
+version '0.0.2'
+
+dependencies {
+    compile group: 'com.orientechnologies', name: 'orientdb-server', version: '2.1.0'
+    compile group: 'com.orientechnologies', name: 'orientdb-core', version: '2.1.0'
+    compile group: 'com.orientechnologies', name: 'orientdb-client', version: '2.1.0'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.2.1.Final'
+    compile ('ru.vyarus:guice-persist-orient:3.1.1'){
+        exclude module: 'orientdb-graphdb'
+        exclude module: 'orientdb-object'
+    }
+}
