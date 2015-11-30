@@ -1,5 +1,7 @@
 package pro.iamgamer.core.security;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
@@ -13,10 +15,10 @@ import java.util.Random;
  * Created by sergey.kobets on 30.11.2015.
  */
 public final class Password {
-
     private static final Random RANDOM = new SecureRandom();
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 512;
+    private static final int RANDOM_PASSWORD_LENGTH = 12;
 
     public static byte[] randomSalt() {
         byte[] salt = new byte[31];
@@ -35,5 +37,9 @@ public final class Password {
         } finally {
             spec.clearPassword();
         }
+    }
+
+    public static String generateRandomPassword(){
+        return RandomStringUtils.random(RANDOM_PASSWORD_LENGTH, 0, 0, true, true);
     }
 }
