@@ -2,7 +2,6 @@ group 'pro.iamgamer'
 version '0.0.2'
 
 dependencies {
-    compile 'org.apache.commons:commons-lang3:3.4'
     compile group: 'com.orientechnologies', name: 'orientdb-server', version: '2.1.0'
     compile group: 'com.orientechnologies', name: 'orientdb-core', version: '2.1.0'
     compile group: 'com.orientechnologies', name: 'orientdb-client', version: '2.1.0'
