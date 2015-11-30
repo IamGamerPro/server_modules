@@ -6,8 +6,8 @@ import com.google.inject.persist.Transactional;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import pro.iamgamer.core.model.Lol;
 import pro.iamgamer.core.model.User;
+import pro.iamgamer.core.security.PasswordUtils;
 import ru.vyarus.guice.persist.orient.support.repository.mixin.crud.DocumentCrud;
 import ru.vyarus.guice.persist.orient.support.repository.mixin.crud.ObjectCrud;
 
@@ -17,10 +17,14 @@ import ru.vyarus.guice.persist.orient.support.repository.mixin.crud.ObjectCrud;
 @Transactional
 @ProvidedBy(DynamicSingletonProvider.class)
 public abstract class UserRepository implements DocumentCrud<User> {
-    public ORID insert(User user){
+    public ORID register(User user){
         final ODocument entries = create();
         entries.field("loginName", user.getLoginName(), OType.STRING);
+        entries.field("salt", user.getSalt(), OType.BINARY);
+        entries.field("password", user.getPassword(), OType.BINARY);
         final ODocument save = save(entries);
         return save.getIdentity();
     }
+
+
 }

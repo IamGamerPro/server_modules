@@ -1,5 +1,7 @@
 package pro.iamgamer.core.model;
 
+import pro.iamgamer.core.security.PasswordUtils;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -28,9 +30,13 @@ public final class User implements Entity {
     @NotNull
     @Size(min = 2, max = 50)
     private String loginName;
+    private byte[] salt;
+    private byte[] password;
 
-    public User(String loginName) {
+    public User(String loginName, String password) {
         this.loginName = loginName;
+        this.salt = PasswordUtils.randomSalt();
+        this.password = PasswordUtils.hash(password.toCharArray(), this.salt);
     }
 
     @Override
@@ -49,5 +55,12 @@ public final class User implements Entity {
 
     public String getLoginName() {
         return loginName;
+    }
+
+    public byte[] getPassword(){
+        return this.password;
+    }
+    public byte[] getSalt() {
+        return salt;
     }
 }
