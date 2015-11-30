@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * Created by sergey.kobets on 30.11.2015.
  */
-public final class Password {
+public final class PasswordUtils {
     private static final Random RANDOM = new SecureRandom();
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 512;
