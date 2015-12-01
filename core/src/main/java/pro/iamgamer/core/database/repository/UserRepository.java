@@ -17,6 +17,7 @@ import ru.vyarus.guice.persist.orient.support.repository.mixin.crud.DocumentCrud
 @Transactional
 @ProvidedBy(DynamicSingletonProvider.class)
 public abstract class UserRepository implements DocumentCrud<User> {
+    private final static String VERSION = "0.0";
 
     public ORID register(User user, String password) {
         final ODocument entries = create();
@@ -26,6 +27,7 @@ public abstract class UserRepository implements DocumentCrud<User> {
         final byte[] passwordHash = PasswordUtils.hash(password.toCharArray(), salt);
         entries.field("salt", salt, OType.BINARY);
         entries.field("password", passwordHash, OType.BINARY);
+        entries.field("version", VERSION);
 
         final ODocument save = save(entries);
         return save.getIdentity();

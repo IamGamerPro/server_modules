@@ -3,6 +3,7 @@ package pro.iamgamer.core.model;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,13 +18,17 @@ public final class User implements Entity {
     /**Версия схема */
     private final Integer shemaVersion = null;
     /**Дата посдедней модификации коллекции*/
-    private LocalDateTime modDate;
+    private Date modDate;
     /**Числовой индекс версии коллекции (после каждого редактирования увеличивается на 1)*/
-    private AtomicInteger modVersion;
+    private Integer modVersion;
     /**Статус удаления аккаунта*/
-    private AtomicBoolean delete = new AtomicBoolean(false);
+    private Boolean delete = Boolean.FALSE;
     /**Дата удаления аккаунта*/
-    private Optional<LocalDateTime> deleteDate;
+    private Optional<Date> deleteDate;
+    private Boolean ban = Boolean.FALSE;
+    private Date banExpiredDate;
+
+
 
     @NotNull
     @Size(min = 2, max = 50)
@@ -42,7 +47,7 @@ public final class User implements Entity {
         sb.append(", modVersion=").append(modVersion);
         sb.append(", delete=").append(delete);
         sb.append(", deleteDate=").append(deleteDate);
-        sb.append(", loginName='").append(loginName).append('\'');
+        sb.append(", login='").append(loginName).append('\'');
         sb.append('}');
         return sb.toString();
     }
