@@ -1,11 +1,12 @@
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.persist.PersistService;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.id.ORID;
 import pro.iamgamer.core.DatabaseManagement;
 import pro.iamgamer.core.database.repository.EmbeddedDBModule;
 import pro.iamgamer.core.database.repository.UserRepository;
+import pro.iamgamer.core.database.dao.UserTest;
+import pro.iamgamer.core.model.User;
+
 
 /**
  * Created by Sergey Kobets on 08.11.2015.
@@ -19,7 +20,10 @@ public class Starter {
         DatabaseManagement instance1 = injector.getInstance(DatabaseManagement.class);
         instance1.start();
         UserRepository instance = injector.getInstance(UserRepository.class);
-        ODocument entries = instance.create();
-        System.out.println("lol");
+        final UserTest instance2 = injector.getInstance(UserTest.class);
+        final User user = new User("test1");
+        final ORID insert = instance.register(user, "qwerty1234");
+        final User login = instance2.login("test1", "qwerty1234");
+        System.out.println(login);
     }
 }

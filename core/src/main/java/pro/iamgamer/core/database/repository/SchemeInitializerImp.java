@@ -37,7 +37,9 @@ public class SchemeInitializerImp implements SchemeInitializer {
         saveCreteProperty(userClass, "modDate", OType.DATETIME);
         final OProperty login = saveCreteProperty(userClass, "login", OType.STRING);
         login.setMax("50");
-        login.createIndex(OClass.INDEX_TYPE.UNIQUE);
+        if(!userClass.areIndexed("login")){
+            login.createIndex(OClass.INDEX_TYPE.UNIQUE);
+        }
         saveCreteProperty(userClass, "password", OType.BINARY);
         saveCreteProperty(userClass, "salt", OType.BINARY);
     }

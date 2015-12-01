@@ -2,11 +2,9 @@ package pro.iamgamer.core.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * Created by Sergey Kobets on 30.08.2015.
@@ -32,10 +30,10 @@ public final class User implements Entity {
 
     @NotNull
     @Size(min = 2, max = 50)
-    private String loginName;
+    private String login;
 
-    public User(String loginName) {
-        this.loginName = loginName;
+    public User(String login) {
+        this.login = login;
     }
 
     @Override
@@ -47,12 +45,12 @@ public final class User implements Entity {
         sb.append(", modVersion=").append(modVersion);
         sb.append(", delete=").append(delete);
         sb.append(", deleteDate=").append(deleteDate);
-        sb.append(", login='").append(loginName).append('\'');
+        sb.append(", login='").append(login).append('\'');
         sb.append('}');
         return sb.toString();
     }
 
-    public String getLoginName() {
-        return loginName;
+    public String getLogin() {
+        return login;
     }
 }
