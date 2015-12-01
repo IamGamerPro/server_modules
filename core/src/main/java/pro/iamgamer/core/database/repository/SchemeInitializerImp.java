@@ -2,7 +2,6 @@ package pro.iamgamer.core.database.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchemaProxy;
-import pro.iamgamer.core.model.Lol;
 import pro.iamgamer.core.model.User;
 import ru.vyarus.guice.persist.orient.db.PersistentContext;
 import ru.vyarus.guice.persist.orient.db.pool.DocumentPool;
