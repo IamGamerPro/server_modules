@@ -4,14 +4,15 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import pro.iamgamer.core.database.dao.repository.UserRepository;
+import pro.iamgamer.core.database.exceptions.IncorrectLoginOrPasswordException;
 import pro.iamgamer.core.model.User;
 import pro.iamgamer.core.security.PasswordUtils;
 import ru.vyarus.guice.persist.orient.db.PersistentContext;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Optional;
 
 
 /**
@@ -39,16 +40,23 @@ public class AuthenticationDao {
         return save.getIdentity();
     }
 
-    public User login(String login, String pwd){
-
-        final User user = tx.<User>doWithoutTransaction(db -> {
-            OSQLSynchQuery<OResultSet> query = new OSQLSynchQuery<>("select from User where login = " + "?");
-            final OResultSet execute = db.command(query).<OResultSet>execute(login);
-            return null;
-        });
-
-        return null;
+    public User login(String login, String password) {
+        final Optional<ODocument> userByLoginName = Optional.ofNullable(userRepository.getUserByLoginName(login));
+        if (userByLoginName.isPresent()) {
+            final ODocument user = userByLoginName.get();
+            final byte[] passwordInDb = user.field("password");
+            final byte[] salt = user.field("salt");
+            final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
+            final boolean equals = Arrays.equals(passwordInDb, hash);
+            if (!equals) {
+                throw new IncorrectLoginOrPasswordException();
+            }
+            final User result = new User(login);
+            result.setId(user.getIdentity());
+            result.setModVersion(user.getVersion());
+            return result;
+        } else {
+            throw new IncorrectLoginOrPasswordException();
+        }
     }
-
-
 }

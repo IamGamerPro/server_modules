@@ -1,5 +1,7 @@
 package pro.iamgamer.core.model;
 
+import com.orientechnologies.orient.core.id.ORID;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -12,7 +14,7 @@ import java.util.Optional;
  */
 public final class User implements Entity {
     /**Системный идентификатор сущности */
-    private final Long id = null;
+    private ORID id;
     /**Версия схема */
     private final Integer shemaVersion = null;
     /**Дата посдедней модификации коллекции*/
@@ -50,7 +52,69 @@ public final class User implements Entity {
         return sb.toString();
     }
 
+
+
     public String getLogin() {
         return login;
+    }
+
+    public ORID getId() {
+        return id;
+    }
+
+    public void setId(ORID id) {
+        this.id = id;
+    }
+
+    public Integer getShemaVersion() {
+        return shemaVersion;
+    }
+
+    public Date getModDate() {
+        return modDate;
+    }
+
+    public void setModDate(Date modDate) {
+        this.modDate = modDate;
+    }
+
+    public Integer getModVersion() {
+        return modVersion;
+    }
+
+    public void setModVersion(Integer modVersion) {
+        this.modVersion = modVersion;
+    }
+
+    public Boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(Boolean delete) {
+        this.delete = delete;
+    }
+
+    public Optional<Date> getDeleteDate() {
+        return deleteDate;
+    }
+
+    public void setDeleteDate(Optional<Date> deleteDate) {
+        this.deleteDate = deleteDate;
+    }
+
+    public Boolean getBan() {
+        return ban;
+    }
+
+    public void setBan(Boolean ban) {
+        this.ban = ban;
+    }
+
+    public Date getBanExpiredDate() {
+        return banExpiredDate;
+    }
+
+    public void setBanExpiredDate(Date banExpiredDate) {
+        this.banExpiredDate = banExpiredDate;
     }
 }
