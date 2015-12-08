@@ -1,4 +1,4 @@
-package pro.iamgamer.core.database;
+package pro.iamgamer.core.database.core;
 
 import com.google.inject.AbstractModule;
 import ru.vyarus.guice.persist.orient.OrientModule;

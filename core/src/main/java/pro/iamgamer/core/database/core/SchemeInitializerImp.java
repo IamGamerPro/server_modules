@@ -1,4 +1,4 @@
-package pro.iamgamer.core.database;
+package pro.iamgamer.core.database.core;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
