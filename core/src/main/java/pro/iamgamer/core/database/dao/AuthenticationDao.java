@@ -1,36 +1,32 @@
-package pro.iamgamer.core.database.repository;
+package pro.iamgamer.core.database.dao;
 
-import com.google.inject.ProvidedBy;
-import com.google.inject.internal.DynamicSingletonProvider;
-import com.google.inject.persist.Transactional;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import pro.iamgamer.core.database.dao.repository.UserRepository;
 import pro.iamgamer.core.model.User;
 import pro.iamgamer.core.security.PasswordUtils;
 import ru.vyarus.guice.persist.orient.db.PersistentContext;
-import ru.vyarus.guice.persist.orient.repository.command.query.Query;
-import ru.vyarus.guice.persist.orient.support.repository.mixin.crud.DocumentCrud;
 
 import javax.inject.Inject;
 
 
 /**
- * Created by Sergey Kobets on 08.11.2015.
+ * Created by sergey.kobets on 08.12.2015.
  */
-@Transactional
-@ProvidedBy(DynamicSingletonProvider.class)
-public abstract class UserRepository implements DocumentCrud<User> {
+public class AuthenticationDao {
     @Inject
     PersistentContext<ODatabaseDocumentTx> tx;
+    @Inject
+    UserRepository userRepository;
 
     private final static String VERSION = "0.0";
 
     public ORID register(User user, String password) {
-        final ODocument entries = create();
+        final ODocument entries = userRepository.create();
         entries.field("login", user.getLogin(), OType.STRING);
 
         final byte[] salt = PasswordUtils.randomSalt();
@@ -39,10 +35,20 @@ public abstract class UserRepository implements DocumentCrud<User> {
         entries.field("password", passwordHash, OType.BINARY);
         entries.field("version", VERSION);
 
-        final ODocument save = save(entries);
+        final ODocument save = userRepository.save(entries);
         return save.getIdentity();
     }
-    /*test1*/
-    @Query("select from User where login = ?")
-    abstract User test(String login, String pwd);
+
+    public User login(String login, String pwd){
+
+        final User user = tx.<User>doWithoutTransaction(db -> {
+            OSQLSynchQuery<OResultSet> query = new OSQLSynchQuery<>("select from User where login = " + "?");
+            final OResultSet execute = db.command(query).<OResultSet>execute(login);
+            return null;
+        });
+
+        return null;
+    }
+
+
 }
