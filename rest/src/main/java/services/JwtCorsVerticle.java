@@ -2,12 +2,10 @@ package services;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import pro.iamgamer.core.database.dao.AuthenticationDao;
@@ -19,9 +17,12 @@ import javax.inject.Inject;
 /**
  * Created by sergey.kobets on 14.12.2015.
  */
-public class LoginContext extends AbstractVerticle {
+public abstract class JwtCorsVerticle extends AbstractVerticle {
     @Inject
     AuthenticationDao authenticationDao;
+
+    protected Router router;
+    protected abstract void concrete();
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -31,8 +32,7 @@ public class LoginContext extends AbstractVerticle {
                 .put("password", "avt564180"));
 
         JWTAuth provider = JWTAuth.create(vertx, config);
-
-        Router router = Router.router(vertx);
+        router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
         router.route().handler(CorsHandler.create("*"));
         router.route().handler(JWTAuthHandler.create(provider, "/api/login"));
@@ -47,12 +47,13 @@ public class LoginContext extends AbstractVerticle {
             try {
                 final User login1 = authenticationDao.login(login, password);
                 event.response().end(provider.generateToken(new JsonObject(), new JWTOptions()
-                        .setExpiresInSeconds(60)));
+                        .setExpiresInSeconds(360)));
             } catch (Exception e) {
                 event.response().setStatusCode(403).end();
             }
         });
-        router.route("/api/*").handler(RoutingContext::next);
+        concrete();
+
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 
     }
