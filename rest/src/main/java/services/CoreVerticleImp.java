@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import pro.iamgamer.core.database.dao.AuthenticationDao;
@@ -17,7 +18,7 @@ import javax.inject.Inject;
 /**
  * Created by sergey.kobets on 14.12.2015.
  */
-public abstract class JwtCorsVerticle extends AbstractVerticle {
+public abstract class CoreVerticleImp extends AbstractVerticle {
     @Inject
     AuthenticationDao authenticationDao;
 
@@ -41,13 +42,15 @@ public abstract class JwtCorsVerticle extends AbstractVerticle {
 
         router.post("/api/login").handler(event -> {
             final JsonObject bodyAsJson = event.getBodyAsJson();
-            System.out.println(bodyAsJson);
             final String login = bodyAsJson.getString("login");
             final String password = bodyAsJson.getString("password");
             try {
                 final User login1 = authenticationDao.login(login, password);
-                event.response().end(provider.generateToken(new JsonObject(), new JWTOptions()
-                        .setExpiresInSeconds(360)));
+                final String chunk =
+                        provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360));
+                final Session session = event.session();
+                session.put("currentToken", chunk);
+                event.response().end(chunk);
             } catch (Exception e) {
                 event.response().setStatusCode(403).end();
             }
