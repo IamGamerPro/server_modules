@@ -6,6 +6,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
+import java.util.UUID;
+
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
@@ -17,8 +19,9 @@ public interface OrientClient {
      * @return
      */
     static OrientClient createNonShared(Vertx vertx, JsonObject config) {
-        return new OrientClientImp(vertx, config, "1"/*UUID.randomUUID().toString()*/);
+        return new OrientClientImp(vertx, config, UUID.randomUUID().toString());
     }
+
     OrientClient getGraph(Handler<AsyncResult<OrientGraphAsync>> handler);
 
     void close();
