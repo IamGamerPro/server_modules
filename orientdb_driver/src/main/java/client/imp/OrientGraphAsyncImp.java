@@ -15,12 +15,12 @@ import java.util.function.Function;
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
-public class OrientGraphImp implements OrientGraphAsync {
+public class OrientGraphAsyncImp implements OrientGraphAsync {
     private final OrientGraph orientGraph;
     private final Vertx vertx;
     private final Context context;
 
-    public OrientGraphImp(Vertx vertx, OrientGraph orientGraph) {
+    public OrientGraphAsyncImp(Vertx vertx, OrientGraph orientGraph) {
         this.vertx = vertx;
         this.orientGraph = orientGraph;
         this.context = ((VertxInternal) vertx).createWorkerContext(false, null, new JsonObject(), getClassLoader());

@@ -59,8 +59,8 @@ public class OrientClientImp implements OrientClient {
             Future<OrientGraphAsync> future = Future.future();
             try{
                 OrientGraph tx = orientGraphFactory.getTx();
-                OrientGraphImp orientGraphImp = new OrientGraphImp(vertx, tx);
-                future.complete(orientGraphImp);
+                OrientGraphAsyncImp orientGraphAsyncImp = new OrientGraphAsyncImp(vertx, tx);
+                future.complete(orientGraphAsyncImp);
             }catch (Exception e){
                 future.fail(e);
             }
