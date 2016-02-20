@@ -1,0 +1,8 @@
+group 'pro.iamgamer'
+version '0.0.2'
+
+dependencies {
+    compile project(":orientdb_driver")
+    compile 'io.vertx:vertx-auth-common:3.2.1'
+    compile 'org.apache.commons:commons-lang3:3.4'
+}
