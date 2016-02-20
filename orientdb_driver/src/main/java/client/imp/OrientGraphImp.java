@@ -10,6 +10,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.json.JsonObject;
 
+import java.util.function.Function;
+
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
@@ -29,16 +31,20 @@ public class OrientGraphImp implements OrientGraphAsync {
         return contextClassLoader == null ? getClass().getClassLoader() : contextClassLoader;
     }
 
+    @Override
     public OrientGraphAsync command(OCommandRequest request, Handler<AsyncResult<Void>> resultHandler) {
-        new OrientGraphCommandAsyncDecorator<Void>(vertx, orientGraph, context) {
-            @Override
-            protected Void execute(OrientGraph orientGraph) {
-                orientGraph.begin();
-                orientGraph.command(request).execute();
-                orientGraph.commit();
-                return null;
-            }
-        }.execute(resultHandler);
+        new OrientGraphCommandAsyncDecorator<Void>(vertx, orientGraph, context, (orientGraph) -> {
+            orientGraph.begin();
+            orientGraph.command(request).execute();
+            orientGraph.commit();
+            return null;
+        }).execute(resultHandler);
+        return this;
+    }
+
+    @Override
+    public <T> OrientGraphAsync command(Function<OrientGraph, T> transactionalFunction, Handler<AsyncResult<T>> resultHandler) {
+        new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, transactionalFunction::apply).execute(resultHandler);
         return this;
     }
 }

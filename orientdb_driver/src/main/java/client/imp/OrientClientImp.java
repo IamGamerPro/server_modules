@@ -99,8 +99,7 @@ public class OrientClientImp implements OrientClient {
     * все замечательно но объект графа не тред сейф значит нельзя
     * просто в лоб его использовать из нескольких потоков
     * необходимо либо шарить что- то вроде пула от которого уже потом брать конекты
-    * либо синхронизировать сам протокол доступа
-    *
+    * и синхронизировать доступ к нему
     */
     private static class OrientGraphFactoryHolder implements Shareable {
         OrientGraphFactory graphFactory;

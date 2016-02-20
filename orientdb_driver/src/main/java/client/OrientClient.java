@@ -9,7 +9,6 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
- * Экпериментальная реализация, должна быть вынесена в отдельный модуль после стабилизации
  */
 public interface OrientClient {
     /**
