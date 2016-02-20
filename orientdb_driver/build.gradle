@@ -1,0 +1,12 @@
+group 'pro.iamgamer'
+version '0.0.2'
+
+dependencies {
+    compile group: 'com.orientechnologies', name: 'orientdb-server', version: '2.1.0'
+    compile group: 'com.orientechnologies', name: 'orientdb-core', version: '2.1.0'
+    compile group: 'com.orientechnologies', name: 'orientdb-client', version: '2.1.0'
+    compile 'com.orientechnologies:orientdb-graphdb:2.1.11'
+    compile group: 'io.vertx', name: 'vertx-core', version: '3.2.1'
+    testCompile 'io.vertx:vertx-unit:3.2.0'
+}
+
