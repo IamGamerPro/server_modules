@@ -3,6 +3,7 @@ import client.OrientGraphAsync;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
+import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -15,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
@@ -45,8 +47,8 @@ public class DatabaseDriverTest {
         orientClient = OrientClient.createNonShared(vertx, new JsonObject().put("url", "plocal:/test"));
     }
 
+    @Repeat(10)
     @Test
-    @Repeat(500)
     public void test(TestContext context) {
         Async async = context.async(1);
         long l = System.nanoTime();
@@ -61,8 +63,39 @@ public class DatabaseDriverTest {
 
             } else {
                 async.complete();
-                System.out.println("lol");
             }
         });
+    }
+
+    @Repeat(10)
+    @Test
+    public void test2(TestContext context) {
+        Async async = context.async(1);
+        orientClient.getGraph(handler -> {
+            if (handler.succeeded()) {
+                OrientGraphAsync result = handler.result();
+                result.command(orientGraph -> {
+                    try {
+                        orientGraph.begin();
+                        OrientVertex orientVertex = orientGraph.addVertex("class:EMPLOYEE", "name", "Sergey", "sex", "male");
+                        orientGraph.commit();
+                        return orientVertex.getId();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }, event -> {
+                    if (event.succeeded()) {
+                        Object generatedId = event.result();
+                        System.out.println(generatedId);
+                        async.complete();
+                    } else {
+                        async.complete();
+                    }
+                });
+            } else {
+                async.complete();
+            }
+        });
+        async.await();
     }
 }
