@@ -9,8 +9,8 @@ import io.vertx.ext.auth.AuthProvider;
  * Created by Sergey Kobets on 05.02.2016.
  */
 public interface OrientDBAuthProvider extends AuthProvider {
-    static OrientDBAuthProvider create(OrientClient client) {
-        return new OrientDBAuthProviderImp(client);
+    static OrientDBAuthProvider create(OrientClient orientClient) {
+        return new OrientDBAuthProviderImp(orientClient);
     }
 
 }
