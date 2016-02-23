@@ -21,6 +21,9 @@ public interface OrientClient {
     static OrientClient createNonShared(Vertx vertx, JsonObject config) {
         return new OrientClientImp(vertx, config, UUID.randomUUID().toString());
     }
+    static OrientClient createShared(Vertx vertx, JsonObject config, String poolName){
+        return new OrientClientImp(vertx, config, poolName);
+    }
 
     OrientClient getGraph(Handler<AsyncResult<OrientGraphAsync>> handler);
 
