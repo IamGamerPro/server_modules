@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface OrientClient {
     /**
      * @param vertx
-     * @param config => {"url":"", "login" :"", "pwd":""}
+     * @param config {"url":"", "login" :"", "pwd":""}
      * @return
      */
     static OrientClient createNonShared(Vertx vertx, JsonObject config) {
