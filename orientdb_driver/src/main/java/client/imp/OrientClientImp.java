@@ -9,24 +9,16 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
- * <p>
- * TODO Вопросы о странном синхронайзед коде:
- * использование конструкции синхронайзед даже для инкрементирования счетчика
- * выглядит крайне странным, однако такой подход всегда используется в коробочных реализациях
- * вертекса. Это наводит на мысли относительно магии которая может стоять за Shareable
- * и о том как она влияет на использование тех же атомиков
- * До тщательного исследования этого вопроса повторю подход, но если это возможно
- * необходимо переделать на менее прожорливую синхронизацию.
  */
 public class OrientClientImp implements OrientClient {
     private static final String GRAPH_FACTORY_LOCAL_MAP_NAME = "iamgamer.shared.OrientDB.OrientGraphFactory";
@@ -57,11 +49,11 @@ public class OrientClientImp implements OrientClient {
         Context ctx = vertx.getOrCreateContext();
         exec.execute(() -> {
             Future<OrientGraphAsync> future = Future.future();
-            try{
+            try {
                 OrientGraph tx = orientGraphFactory.getTx();
                 OrientGraphAsyncImp orientGraphAsyncImp = new OrientGraphAsyncImp(vertx, tx);
                 future.complete(orientGraphAsyncImp);
-            }catch (Exception e){
+            } catch (Exception e) {
                 future.fail(e);
             }
             ctx.runOnContext(v -> future.setHandler(handler));
@@ -93,59 +85,59 @@ public class OrientClientImp implements OrientClient {
         }
     }
 
-    /*протокол холдера предполагает Shareable
-    * т.е. я создаю некоторый объект и публикую его по уникальному идентификатору
-    * в распределенной мапе, идентификатор такого объекта просто строка
-    * все замечательно но объект графа не тред сейф значит нельзя
-    * просто в лоб его использовать из нескольких потоков
-    * необходимо либо шарить что- то вроде пула от которого уже потом брать конекты
-    * и синхронизировать доступ к нему
-    */
     private static class OrientGraphFactoryHolder implements Shareable {
-        OrientGraphFactory graphFactory;
-        Runnable closeRunner;
-        ExecutorService exec;
-        JsonObject config;
-        int refCount = 1;
+        private volatile OrientGraphFactory graphFactory;
+        private volatile ExecutorService exec;
+        private final Runnable closeRunner;
+        private final JsonObject config;
+        private final AtomicInteger clientCount = new AtomicInteger(1);
 
-        public OrientGraphFactoryHolder(JsonObject config, Runnable closeRunner) {
+        OrientGraphFactoryHolder(JsonObject config, Runnable closeRunner) {
             this.config = config;
             this.closeRunner = closeRunner;
         }
 
-        synchronized OrientGraphFactory orientGraphFactory() {
+        OrientGraphFactory orientGraphFactory() {
             if (graphFactory == null) {
-                Optional<String> url = Optional.ofNullable(config.getString("url"));
-                Optional<String> login = Optional.ofNullable(config.getString("login"));
-                Optional<String> pwd = Optional.ofNullable(config.getString("pwd"));
-                if (!url.isPresent()) {
-                    throw new RuntimeException();
+                synchronized (this) {
+                    if (graphFactory == null) {
+                        Optional<String> url = Optional.ofNullable(config.getString("url"));
+                        Optional<String> login = Optional.ofNullable(config.getString("login"));
+                        Optional<String> pwd = Optional.ofNullable(config.getString("pwd"));
+                        if (!url.isPresent()) {
+                            throw new RuntimeException();
+                        }
+                        graphFactory = (login.isPresent() && pwd.isPresent())
+                                ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
+                                : new OrientGraphFactory(url.get());
+                        graphFactory.setupPool(50, 50);
+                    }
                 }
-                graphFactory = (login.isPresent() && pwd.isPresent())
-                        ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
-                        : new OrientGraphFactory(url.get());
-                graphFactory.setupPool(50, 50);
             }
             return graphFactory;
 
         }
 
-        synchronized void incRefCount() {
-            refCount++;
+        void incRefCount() {
+            clientCount.incrementAndGet();
         }
 
-        synchronized ExecutorService exec() {
+        ExecutorService exec() {
             if (exec == null) {
-                exec = new ThreadPoolExecutor(1, 1,
-                        1000L, TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<>(),
-                        (r -> new Thread(r, "iamgamer-orient-service-get-graph-factory")));
+                synchronized (this) {
+                    if (exec == null) {
+                        exec = new ThreadPoolExecutor(1, 1,
+                                1000L, TimeUnit.MILLISECONDS,
+                                new LinkedBlockingQueue<>(),
+                                (r -> new Thread(r, "iamgamer-orient-service-get-graph")));
+                    }
+                }
             }
             return exec;
         }
 
-        synchronized void close() {
-            if (--refCount == 0) {
+        void close() {
+            if (clientCount.decrementAndGet() == 0) {
                 if (graphFactory != null) {
                     graphFactory.close();
                 }
