@@ -1,4 +1,6 @@
 rootProject.name = 'server'
 include 'core'
 include 'rest'
+include 'orientdb_driver'
+include 'auth'
 

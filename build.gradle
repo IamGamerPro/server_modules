@@ -8,20 +8,23 @@ mainClassName = 'Starter'
 dependencies {
     compile project(":core")
     compile project(":rest")
+    compile project(":orientdb_driver")
+    compile project(":auth")
 }
 
 allprojects {
     apply plugin: 'java'
     apply plugin: "idea"
+    javadoc {
+        options.charSet = 'UTF-8'
+    }
 
     repositories {
         mavenCentral()
     }
-    test {
-        useTestNG()
-    }
+
     dependencies {
-        testCompile 'org.testng:testng:6.9.6'
+        testCompile group: 'junit', name: 'junit', version: '4.11'
         compile 'com.google.inject:guice:4.0'
         compile 'com.google.inject.extensions:guice-persist:4.0'
         compile 'cglib:cglib:3.2.0'
