@@ -100,19 +100,19 @@ public class OrientClientImp implements OrientClient {
         OrientGraphFactory orientGraphFactory() {
             OrientGraphFactory graphFactory = this.graphFactory;
             if (graphFactory == null) {
+                Optional<String> url = Optional.ofNullable(config.getString("url"));
+                Optional<String> login = Optional.ofNullable(config.getString("login"));
+                Optional<String> pwd = Optional.ofNullable(config.getString("pwd"));
+                if (!url.isPresent()) {
+                    throw new RuntimeException();
+                }
                 synchronized (this) {
                     if (this.graphFactory == null) {
-                        Optional<String> url = Optional.ofNullable(config.getString("url"));
-                        Optional<String> login = Optional.ofNullable(config.getString("login"));
-                        Optional<String> pwd = Optional.ofNullable(config.getString("pwd"));
-                        if (!url.isPresent()) {
-                            throw new RuntimeException();
-                        }
-                        OrientGraphFactory savePoolInit = (login.isPresent() && pwd.isPresent())
+                        OrientGraphFactory saveConfigInit = (login.isPresent() && pwd.isPresent())
                                 ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
                                 : new OrientGraphFactory(url.get());
-                        savePoolInit.setupPool(50, 50);
-                        this.graphFactory = savePoolInit;
+                        saveConfigInit.setupPool(50, 50);
+                        this.graphFactory = saveConfigInit;
                     }
                 }
                 return this.graphFactory;
