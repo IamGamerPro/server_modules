@@ -107,10 +107,11 @@ public class OrientClientImp implements OrientClient {
                         if (!url.isPresent()) {
                             throw new RuntimeException();
                         }
-                        graphFactory = (login.isPresent() && pwd.isPresent())
+                        final OrientGraphFactory graphFactory = (login.isPresent() && pwd.isPresent())
                                 ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
                                 : new OrientGraphFactory(url.get());
                         graphFactory.setupPool(50, 50);
+                        this.graphFactory = graphFactory;
                     }
                 }
             }
