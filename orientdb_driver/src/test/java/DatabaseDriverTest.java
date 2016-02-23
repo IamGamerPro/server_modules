@@ -14,6 +14,9 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import static client.imp.ParamsRequest.request;
 
 /**
@@ -43,7 +46,7 @@ public class DatabaseDriverTest {
 
     @Before
     public void init() {
-        orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "Check");
+        orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "as");
     }
 
     @Repeat(760)
@@ -55,7 +58,7 @@ public class DatabaseDriverTest {
             if (handler.succeeded()) {
                 OrientGraphAsync result = handler.result();
                 result.command(request(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }"), "as"), v -> {
-                    System.out.println(System.nanoTime() - l);
+                    System.out.println(TimeUnit.MILLISECONDS.convert(System.nanoTime() - l, TimeUnit.NANOSECONDS));
                     async.complete();
                 });
 
