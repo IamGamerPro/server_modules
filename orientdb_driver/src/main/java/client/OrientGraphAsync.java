@@ -1,5 +1,6 @@
 package client;
 
+import client.imp.ParamsRequest;
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import io.vertx.core.AsyncResult;
@@ -14,7 +15,7 @@ public interface OrientGraphAsync {
     /**
      * Выполнить запрос без параметров не возвращая результат
      */
-    OrientGraphAsync command(OCommandRequest request, Handler<AsyncResult<Void>> resultHandler);
+    OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler);
 
     /**
      * Выполнить произвольный код в транзакции вернуть значение

@@ -11,11 +11,10 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import static client.imp.ParamsRequest.request;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
@@ -44,10 +43,10 @@ public class DatabaseDriverTest {
 
     @Before
     public void init() {
-        orientClient = OrientClient.createNonShared(vertx, new JsonObject().put("url", "plocal:/test"));
+        orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "Check");
     }
 
-    @Repeat(10)
+    @Repeat(760)
     @Test
     public void test(TestContext context) {
         Async async = context.async(1);
@@ -55,7 +54,7 @@ public class DatabaseDriverTest {
         orientClient.getGraph(handler -> {
             if (handler.succeeded()) {
                 OrientGraphAsync result = handler.result();
-                result.command(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }"), v -> {
+                result.command(request(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }")), v -> {
                     System.out.println(System.nanoTime() - l);
                     async.complete();
                 });
