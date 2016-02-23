@@ -13,7 +13,7 @@ import java.util.function.Function;
  */
 public interface OrientGraphAsync {
     /**
-     * Выполнить запрос без параметров не возвращая результат
+     * Выполнить запрос не возвращая результат
      */
     OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler);
 
