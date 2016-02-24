@@ -3,17 +3,20 @@ package auth.imp;
 import auth.OrientDBAuthProvider;
 import client.OrientClient;
 import client.OrientGraphAsync;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 
+
 /**
  * Created by Sergey Kobets on 05.02.2016.
  */
 public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
     private OrientClient orientClient;
+    private static final OCommandSQL loginQuery = new OCommandSQL("select from AppUser where login = ?");
 
     public OrientDBAuthProviderImp(OrientClient orientClient) {
         this.orientClient = orientClient;
@@ -35,10 +38,19 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
             if (graphAsyncAsyncHandler.succeeded()) {
                 OrientGraphAsync orientGraphAsync = graphAsyncAsyncHandler.result();
                 orientGraphAsync.command((orientGraph -> {
-                    UserCredentials userCredentials = new UserCredentials();
-
-                    return userCredentials;
-
+                    Object execute = orientGraph.command(loginQuery).execute(username);
+                    System.out.println(execute);
+                    return new UserCredentials();
+                    /*лучше поменять на стринги от хешей, так будет эффективнее*/
+                    /*final byte[] passwordInDb = execute.field("password");
+                    final byte[] salt = execute.field("salt");
+                    final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
+                    final boolean equals = Arrays.equals(passwordInDb, hash);
+                    if (equals) {
+                        return userCredentials;
+                    } else {
+                        throw new RuntimeException();
+                    }*/
                 }), event -> {
                     if (event.succeeded()) {
                         resultHandler.handle(Future.succeededFuture(event.result()));
@@ -46,11 +58,9 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
                         resultHandler.handle(Future.failedFuture(event.cause()));
                     }
                 });
-
             } else {
                 resultHandler.handle(Future.failedFuture(graphAsyncAsyncHandler.cause()));
             }
         });
-
     }
 }
