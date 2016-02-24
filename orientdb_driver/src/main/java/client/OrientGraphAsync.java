@@ -13,7 +13,6 @@ import java.util.function.Function;
  */
 public interface OrientGraphAsync {
     /**
-     * Выполнить запрос не возвращая результат
      */
     OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler);
 
@@ -22,6 +21,11 @@ public interface OrientGraphAsync {
      * @param function бизнес логика выполняемая в транзакционном графе
      * @param handler функция обратного вызова завершения обработки бизнес логики
      * @param <T> тип возращаемого значения
+     *
+     * заменить Function на функциональный интерфейс с методом по умолчанию получения хеша, для совместимоти с
+     *           ParamsRequest.
+     *           сингатура ParamsRequestFunction<OrientGraph, I, O>
+     *           I - результат запроса от базы по которому можно вычислить хеш и выдрать переданные параметры
      */
     <T> OrientGraphAsync command(Function<OrientGraph, T> function, Handler<AsyncResult<T>> handler);
 
