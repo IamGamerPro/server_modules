@@ -27,7 +27,6 @@ public class OrientClientImp implements OrientClient {
     private final ExecutorService exec;
     private final OrientGraphFactory orientGraphFactory;
 
-
     public OrientClientImp(Vertx vertx, JsonObject config, String poolName) {
         Objects.requireNonNull(vertx);
         Objects.requireNonNull(config);
@@ -36,7 +35,6 @@ public class OrientClientImp implements OrientClient {
         this.orientGraphFactoryHolder = lookupHolder(poolName, config);
         this.exec = orientGraphFactoryHolder.exec();
         this.orientGraphFactory = orientGraphFactoryHolder.orientGraphFactory();
-
     }
 
     @Override
@@ -63,17 +61,18 @@ public class OrientClientImp implements OrientClient {
 
     private OrientGraphFactoryHolder lookupHolder(String poolName, JsonObject config) {
         synchronized (vertx) {
-            LocalMap<String, OrientGraphFactoryHolder> cashedPool = vertx.sharedData().getLocalMap(GRAPH_FACTORY_LOCAL_MAP_NAME);
+            LocalMap<String, OrientGraphFactoryHolder> cashedPool =
+                    vertx.sharedData().getLocalMap(GRAPH_FACTORY_LOCAL_MAP_NAME);
             OrientGraphFactoryHolder orientGraphFactoryHolder = cashedPool.get(poolName);
             if (orientGraphFactoryHolder == null) {
-                orientGraphFactoryHolder = new OrientGraphFactoryHolder(config, () -> removeFromMap(cashedPool, poolName));
+                orientGraphFactoryHolder =
+                        new OrientGraphFactoryHolder(config, () -> removeFromMap(cashedPool, poolName));
                 cashedPool.put(poolName, orientGraphFactoryHolder);
             } else {
                 orientGraphFactoryHolder.incRefCount();
             }
             return orientGraphFactoryHolder;
         }
-
     }
 
     private void removeFromMap(LocalMap<String, OrientGraphFactoryHolder> map, String dataSourceName) {
@@ -86,8 +85,8 @@ public class OrientClientImp implements OrientClient {
     }
 
     private static class OrientGraphFactoryHolder implements Shareable {
-        private volatile OrientGraphFactory graphFactory;
-        private volatile ExecutorService exec;
+        private OrientGraphFactory graphFactory;
+        private ExecutorService exec;
         private final Runnable closeRunner;
         private final JsonObject config;
         private final AtomicInteger clientCount = new AtomicInteger(1);
@@ -97,8 +96,7 @@ public class OrientClientImp implements OrientClient {
             this.closeRunner = closeRunner;
         }
 
-        OrientGraphFactory orientGraphFactory() {
-            OrientGraphFactory graphFactory = this.graphFactory;
+        synchronized OrientGraphFactory orientGraphFactory() {
             if (graphFactory == null) {
                 Optional<String> url = Optional.ofNullable(config.getString("url"));
                 Optional<String> login = Optional.ofNullable(config.getString("login"));
@@ -106,35 +104,30 @@ public class OrientClientImp implements OrientClient {
                 if (!url.isPresent()) {
                     throw new RuntimeException();
                 }
-                synchronized (this) {
-                    if (this.graphFactory == null) {
-                        OrientGraphFactory saveConfigInit = (login.isPresent() && pwd.isPresent())
-                                ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
+                OrientGraphFactory saveConfigInit =
+                        (login.isPresent() && pwd.isPresent())
+                                ? new OrientGraphFactory(url.get(),
+                                                         login.get(),
+                                                         pwd.get())
                                 : new OrientGraphFactory(url.get());
-                        saveConfigInit.setupPool(50, 50);
-                        this.graphFactory = saveConfigInit;
-                    }
-                }
-                return this.graphFactory;
+                saveConfigInit.setupPool(50, 50);
+                this.graphFactory = saveConfigInit;
             }
             return graphFactory;
-
         }
 
         void incRefCount() {
             clientCount.incrementAndGet();
         }
 
-        ExecutorService exec() {
+        synchronized ExecutorService exec() {
             if (exec == null) {
-                synchronized (this) {
-                    if (exec == null) {
-                        exec = new ThreadPoolExecutor(1, 1,
-                                1000L, TimeUnit.MILLISECONDS,
-                                new LinkedBlockingQueue<>(),
-                                (r -> new Thread(r, "iamgamer-orient-service-get-graph")));
-                    }
-                }
+                exec = new ThreadPoolExecutor(1,
+                                              1,
+                                              1000L,
+                                              TimeUnit.MILLISECONDS,
+                                              new LinkedBlockingQueue<>(),
+                                              (r -> new Thread(r, "iamgamer-orient-service-get-graph")));
             }
             return exec;
         }
@@ -150,5 +143,4 @@ public class OrientClientImp implements OrientClient {
             }
         }
     }
-
 }
