@@ -53,7 +53,7 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
                             final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
                             final boolean equals = Arrays.equals(passwordInDb, hash);
                             if (equals) {
-                                resultHandler.handle(Future.succeededFuture(new UserCredentials()));
+                                resultHandler.handle(Future.succeededFuture(new OrientUser(username, this)));
                             } else {
                                 resultHandler.handle(Future.failedFuture("Не правильное имя пользователя или пароль"));
                             }
