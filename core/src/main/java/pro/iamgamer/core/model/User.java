@@ -40,16 +40,15 @@ public final class User implements Entity {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("User{");
-        sb.append("id=").append(id);
-        sb.append(", shemaVersion=").append(shemaVersion);
-        sb.append(", modDate=").append(modDate);
-        sb.append(", modVersion=").append(modVersion);
-        sb.append(", delete=").append(delete);
-        sb.append(", deleteDate=").append(deleteDate);
-        sb.append(", login='").append(login).append('\'');
-        sb.append('}');
-        return sb.toString();
+        String sb = "User{" + "id=" + id +
+                ", shemaVersion=" + shemaVersion +
+                ", modDate=" + modDate +
+                ", modVersion=" + modVersion +
+                ", delete=" + delete +
+                ", deleteDate=" + deleteDate +
+                ", login='" + login + '\'' +
+                '}';
+        return sb;
     }
 
 
