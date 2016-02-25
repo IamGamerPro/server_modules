@@ -9,14 +9,14 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Repeat;
+import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -25,9 +25,13 @@ import java.util.Map;
 @RunWith(VertxUnitRunner.class)
 public class AuthTest {
 
-    private OrientClient orientClient;
-    private OrientDBAuthProvider authProvider;
+    private static OrientClient orientClient;
+    private static OrientDBAuthProvider authProvider;
     private static Vertx vertx;
+    private static List<Long> time = new ArrayList<>();
+
+    @Rule
+    public RepeatRule rule = new RepeatRule();
 
     public static void createVertexType(OrientGraphNoTx noTx, String name, Map<String, OType> property) {
         OrientVertexType existType = noTx.getVertexType(name);
@@ -60,11 +64,7 @@ public class AuthTest {
         }
         orientGraphFactory.close();
         vertx = Vertx.vertx();
-    }
-
-    @Before
-    public void before() {
-        orientClient = OrientClient.createNonShared(vertx, new JsonObject().put("url", "plocal:/test"));
+        orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "loginPool");
         authProvider = OrientDBAuthProvider.create(orientClient);
     }
 
@@ -80,13 +80,22 @@ public class AuthTest {
     }
 
     @Test
+    @Repeat(100)
     public void correctLogin(TestContext context) {
         Async async = context.async(1);
+        long start = System.nanoTime();
         authProvider.authenticate(new JsonObject("{\"username\":\"testSuccess\", \"password\": \"dfltpwd\"}"), event ->
         {
             context.assertTrue(event.succeeded());
+            time.add(System.nanoTime() - start);
             async.countDown();
         });
         async.await();
+    }
+
+    @AfterClass
+    public static void afterClass(){
+        Optional<Long> min = time.stream().min(Long::compare);
+        System.out.println(TimeUnit.MILLISECONDS.convert(min.get(), TimeUnit.NANOSECONDS));
     }
 }
