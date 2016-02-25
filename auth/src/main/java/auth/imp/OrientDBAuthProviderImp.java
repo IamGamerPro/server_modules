@@ -46,7 +46,7 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
                 orientGraphAsync.query(ParamsRequest.buildRequest(loginQuery, username), event -> {
                     if (event.succeeded()) {
                         Optional<Vertex> first = event.result().findFirst();
-                        if (!first.isPresent()) {
+                        if (first.isPresent()) {
                             Vertex userInDb = first.get();
                             final byte[] passwordInDb = userInDb.getProperty("password");
                             final byte[] salt = userInDb.getProperty("salt");
