@@ -1,7 +1,7 @@
 package client.imp;
 
 import client.OrientGraphAsync;
-import com.orientechnologies.orient.core.command.OCommandRequest;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
@@ -11,6 +11,8 @@ import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.json.JsonObject;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
@@ -32,12 +34,21 @@ public class OrientGraphAsyncImp implements OrientGraphAsync {
     }
 
     @Override
-    public OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler) {
+    public final OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<Void>(vertx, orientGraph, context, (orientGraph) -> {
             orientGraph.begin();
             orientGraph.command(request.getRequest()).execute(request.getParams());
             orientGraph.commit();
             return null;
+        }).execute(resultHandler);
+        return this;
+    }
+
+    @Override
+    public OrientGraphAsync query(ParamsRequest request, Handler<AsyncResult<Stream<Vertex>>> resultHandler) {
+        new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, orientGraph -> {
+            Iterable<Vertex> result = orientGraph.command(request.getRequest()).execute(request.getParams());
+            return StreamSupport.stream(result.spliterator(), false);
         }).execute(resultHandler);
         return this;
     }

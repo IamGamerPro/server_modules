@@ -2,11 +2,13 @@ package client;
 
 import client.imp.ParamsRequest;
 import com.orientechnologies.orient.core.command.OCommandRequest;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
@@ -16,6 +18,7 @@ public interface OrientGraphAsync {
      */
     OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler);
 
+    OrientGraphAsync query(ParamsRequest request, Handler<AsyncResult<Stream<Vertex>>> resultHandler);
     /**
      * Выполнить произвольный код в транзакции вернуть значение
      * @param function бизнес логика выполняемая в транзакционном графе

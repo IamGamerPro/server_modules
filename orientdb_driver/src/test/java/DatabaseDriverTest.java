@@ -11,13 +11,15 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static client.imp.ParamsRequest.request;
+import static client.imp.ParamsRequest.buildRequest;
 
 /**
  * Created by Sergey Kobets on 20.02.2016.
@@ -57,7 +59,7 @@ public class DatabaseDriverTest {
         orientClient.getGraph(handler -> {
             if (handler.succeeded()) {
                 OrientGraphAsync result = handler.result();
-                result.command(request(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }"), "as"), v -> {
+                result.command(buildRequest(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }"), "as"), v -> {
                     System.out.println(TimeUnit.MILLISECONDS.convert(System.nanoTime() - l, TimeUnit.NANOSECONDS));
                     async.complete();
                 });

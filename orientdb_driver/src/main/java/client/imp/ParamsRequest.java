@@ -1,6 +1,7 @@
 package client.imp;
 
 import com.orientechnologies.orient.core.command.OCommandRequest;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -10,15 +11,15 @@ import java.util.Objects;
  * Обертка для запроса и его параметров.
  */
 public class ParamsRequest {
-    private final OCommandRequest request;
+    private final OCommandSQL request;
     private final Object[] params;
 
-    private ParamsRequest(OCommandRequest request, Object... params) {
+    private ParamsRequest(OCommandSQL request, Object... params) {
         this.request = request;
         this.params = params;
     }
 
-    public static ParamsRequest request(OCommandRequest request, Object... params) {
+    public static ParamsRequest buildRequest(OCommandSQL request, Object... params) {
         return new ParamsRequest(request, params);
     }
 
