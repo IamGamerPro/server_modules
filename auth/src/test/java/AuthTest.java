@@ -1,4 +1,5 @@
 import auth.OrientDBAuthProvider;
+import auth.imp.security.PasswordUtils;
 import client.OrientClient;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
@@ -48,9 +49,12 @@ public class AuthTest {
             }
             Map<String, OType> fields = new HashMap<>();
             fields.put("login", OType.STRING);
-            fields.put("password", OType.STRING);
-            fields.put("salt", OType.STRING);
+            fields.put("password", OType.BINARY);
+            fields.put("salt", OType.BINARY);
             createVertexType(noTx, "User", fields);
+            byte[] salt = PasswordUtils.randomSalt();
+            byte[] hash = PasswordUtils.hash("dfltpwd".toCharArray(), salt);
+            noTx.addVertex("class:User", "login", "testSuccess", "salt", salt, "password", hash);
         } catch (Exception e) {
             e.printStackTrace();
         }
