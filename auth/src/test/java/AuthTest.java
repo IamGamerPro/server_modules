@@ -43,7 +43,7 @@ public class AuthTest {
         OrientGraphFactory orientGraphFactory = new OrientGraphFactory("plocal:/test");
         OrientGraphNoTx noTx = orientGraphFactory.getNoTx();
         try {
-            if(noTx.getVertexType("User") != null) {
+            if (noTx.getVertexType("User") != null) {
                 noTx.dropVertexType("User");
             }
             Map<String, OType> fields = new HashMap<>();
@@ -65,16 +65,23 @@ public class AuthTest {
     }
 
     @Test
-    public void test(TestContext context) {
+    public void incorrectLogin(TestContext context) {
         Async async = context.async(1);
         authProvider.authenticate(new JsonObject("{\"username\":\"test\", \"password\": \"dfltpwd\"}"), event -> {
-            if (event.succeeded()) {
-                System.out.println(event.result());
-                async.countDown();
-            } else {
-                System.out.println(event.cause().getMessage());
-                async.countDown();
-            }
+            context.assertTrue(event.failed());
+            context.assertEquals(event.cause().getMessage(), "Не правильное имя пользователя или пароль");
+            async.countDown();
+        });
+        async.await();
+    }
+
+    @Test
+    public void correctLogin(TestContext context) {
+        Async async = context.async(1);
+        authProvider.authenticate(new JsonObject("{\"username\":\"testSuccess\", \"password\": \"dfltpwd\"}"), event ->
+        {
+            context.assertTrue(event.succeeded());
+            async.countDown();
         });
         async.await();
     }
