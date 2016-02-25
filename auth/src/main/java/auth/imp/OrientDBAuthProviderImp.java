@@ -1,8 +1,10 @@
 package auth.imp;
 
 import auth.OrientDBAuthProvider;
+import auth.imp.security.PasswordUtils;
 import client.OrientClient;
 import client.OrientGraphAsync;
+import client.imp.ParamsRequest;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import io.vertx.core.AsyncResult;
@@ -11,15 +13,15 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.Arrays;
+import java.util.Optional;
 
 
 /**
  * Created by Sergey Kobets on 05.02.2016.
  */
 public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
-    private OrientClient orientClient;
+    private final OrientClient orientClient;
     private static final OCommandSQL loginQuery = new OCommandSQL("select from User where login = ?");
 
     public OrientDBAuthProviderImp(OrientClient orientClient) {
@@ -41,27 +43,23 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
         orientClient.getGraph((graphAsyncAsyncHandler) -> {
             if (graphAsyncAsyncHandler.succeeded()) {
                 OrientGraphAsync orientGraphAsync = graphAsyncAsyncHandler.result();
-                orientGraphAsync.command((orientGraph -> {
-                    Iterable<Vertex> result = orientGraph.command(loginQuery).execute(username);
-                    Stream<Vertex> stream = StreamSupport.stream(result.spliterator(), false);
-                    stream.findFirst().map(user -> {
-                        user.getProperty("");
-                        return null;
-                    });
-                    return new UserCredentials();
-                    /*ÎÛ˜¯Â ÔÓÏÂÌˇÚ¸ Ì‡ ÒÚËÌ„Ë ÓÚ ıÂ¯ÂÈ, Ú‡Í ·Û‰ÂÚ ˝ÙÙÂÍÚË‚ÌÂÂ*/
-                    /*final byte[] passwordInDb = execute.field("password");
-                    final byte[] salt = execute.field("salt");
-                    final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
-                    final boolean equals = Arrays.equals(passwordInDb, hash);
-                    if (equals) {
-                        return userCredentials;
-                    } else {
-                        throw new RuntimeException();
-                    }*/
-                }), event -> {
+                orientGraphAsync.query(ParamsRequest.buildRequest(loginQuery, username), event -> {
                     if (event.succeeded()) {
-                        resultHandler.handle(Future.succeededFuture(event.result()));
+                        Optional<Vertex> first = event.result().findFirst();
+                        if (!first.isPresent()) {
+                            Vertex userInDb = first.get();
+                            final byte[] passwordInDb = userInDb.getProperty("password");
+                            final byte[] salt = userInDb.getProperty("salt");
+                            final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
+                            final boolean equals = Arrays.equals(passwordInDb, hash);
+                            if (equals) {
+                                resultHandler.handle(Future.succeededFuture(new UserCredentials()));
+                            } else {
+                                resultHandler.handle(Future.failedFuture("–ù–µ –ø—Ä–∞–≤–∏–ª—å–Ω–æ–µ –∏–º—è –ø–æ–ª—å–∑–æ–≤–∞—Ç–µ–ª—è –∏–ª–∏ –ø–∞—Ä–æ–ª—å"));
+                            }
+                        } else {
+                            resultHandler.handle(Future.failedFuture("–ù–µ –ø—Ä–∞–≤–∏–ª—å–Ω–æ–µ –∏–º—è –ø–æ–ª—å–∑–æ–≤–∞—Ç–µ–ª—è –∏–ª–∏ –ø–∞—Ä–æ–ª—å"));
+                        }
                     } else {
                         resultHandler.handle(Future.failedFuture(event.cause()));
                     }
