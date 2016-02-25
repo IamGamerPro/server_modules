@@ -12,7 +12,10 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.RepeatRule;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.*;
@@ -29,6 +32,7 @@ public class AuthTest {
     private static OrientDBAuthProvider authProvider;
     private static Vertx vertx;
     private static List<Long> time = new ArrayList<>();
+    private static final JsonObject user = new JsonObject("{\"username\":\"testSuccess\", \"password\": \"dfltpwd\"}");
 
     @Rule
     public RepeatRule rule = new RepeatRule();
@@ -84,7 +88,7 @@ public class AuthTest {
     public void correctLogin(TestContext context) {
         Async async = context.async(1);
         long start = System.nanoTime();
-        authProvider.authenticate(new JsonObject("{\"username\":\"testSuccess\", \"password\": \"dfltpwd\"}"), event ->
+        authProvider.authenticate(user, event ->
         {
             context.assertTrue(event.succeeded());
             time.add(System.nanoTime() - start);
@@ -94,8 +98,11 @@ public class AuthTest {
     }
 
     @AfterClass
-    public static void afterClass(){
+    public static void afterClass() {
         Optional<Long> min = time.stream().min(Long::compare);
-        System.out.println(TimeUnit.MILLISECONDS.convert(min.get(), TimeUnit.NANOSECONDS));
+        Optional<Long> max = time.stream().max(Long::compare);
+        long bestTime = TimeUnit.MILLISECONDS.convert(min.get(), TimeUnit.NANOSECONDS);
+        long worstTime = TimeUnit.MILLISECONDS.convert(max.get(), TimeUnit.NANOSECONDS);
+        System.out.println("Login bestTime: " + bestTime + "ms worstTime:" + worstTime + "ms");
     }
 }
