@@ -1,5 +1,7 @@
 package services;
 
+import auth.OrientDBAuthProvider;
+import client.OrientClient;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -45,7 +47,7 @@ public abstract class CoreVerticleImp extends AbstractVerticle {
             final String login = bodyAsJson.getString("login");
             final String password = bodyAsJson.getString("password");
             try {
-                final User login1 = authenticationDao.login(login, password);
+                /*OrientDBAuthProvider.create()*/
                 final String chunk =
                         provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360));
                 final Session session = event.session();
