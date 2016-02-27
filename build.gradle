@@ -28,7 +28,7 @@ allprojects {
         compile 'com.google.inject:guice:4.0'
         compile 'com.google.inject.extensions:guice-persist:4.0'
         compile 'cglib:cglib:3.2.0'
-        compile 'com.google.guava:guava:18.0'
+        compile 'com.google.guava:guava:19.0'
         compile 'org.apache.commons:commons-lang3:3.4'
     }
 }

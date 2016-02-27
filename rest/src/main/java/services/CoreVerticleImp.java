@@ -1,7 +1,5 @@
 package services;
 
-import auth.OrientDBAuthProvider;
-import client.OrientClient;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -12,7 +10,6 @@ import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import pro.iamgamer.core.database.dao.AuthenticationDao;
-import pro.iamgamer.core.model.User;
 
 import javax.inject.Inject;
 
@@ -25,6 +22,7 @@ public abstract class CoreVerticleImp extends AbstractVerticle {
     AuthenticationDao authenticationDao;
 
     protected Router router;
+
     protected abstract void concrete();
 
     @Override
@@ -49,7 +47,7 @@ public abstract class CoreVerticleImp extends AbstractVerticle {
             try {
                 /*OrientDBAuthProvider.create()*/
                 final String chunk =
-                        provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360));
+                        provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360L));
                 final Session session = event.session();
                 session.put("currentToken", chunk);
                 event.response().end(chunk);
