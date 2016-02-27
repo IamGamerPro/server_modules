@@ -15,7 +15,7 @@ import static io.vertx.ext.sync.Sync.awaitResult;
  * Created by Sergey Kobets on 27.02.2016.
  */
 public class RegisterService {
-    public static final OCommandSQL isUnicalLogin = new OCommandSQL("select from User where login = ?");
+    public static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select from User where login = ?");
     private final OrientClient orientClient;
 
     public RegisterService(OrientClient orientClient) {
@@ -25,7 +25,7 @@ public class RegisterService {
     @Suspendable
     public boolean isUniqueLogin(String loginName) {
         OrientGraphAsync orientGraphAsync = awaitResult(orientClient::getGraph);
-        Stream<Vertex> o = awaitResult(x -> orientGraphAsync.query(ParamsRequest.buildRequest(isUnicalLogin, loginName), x));
+        Stream<Vertex> o = awaitResult(x -> orientGraphAsync.query(ParamsRequest.buildRequest(SELECT_BY_LOGIN, loginName), x));
         return o.count() == 0;
     }
 
