@@ -7,7 +7,6 @@ import co.paralleluniverse.fibers.Suspendable;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 
-import java.util.concurrent.CancellationException;
 import java.util.stream.Stream;
 
 import static io.vertx.ext.sync.Sync.awaitResult;
