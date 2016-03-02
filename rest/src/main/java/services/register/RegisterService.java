@@ -3,13 +3,11 @@ package services.register;
 import client.OrientClient;
 import client.OrientGraphAsync;
 import client.imp.ParamsRequest;
-import co.paralleluniverse.fibers.Suspendable;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
+import io.vertx.ext.web.RoutingContext;
 
 import java.util.stream.Stream;
-
-import static io.vertx.ext.sync.Sync.awaitResult;
 
 /**
  * Created by Sergey Kobets on 27.02.2016.
@@ -22,11 +20,28 @@ public class RegisterService {
         this.orientClient = orientClient;
     }
 
-    @Suspendable
-    public boolean isUniqueLogin(String loginName) {
-        OrientGraphAsync orientGraphAsync = awaitResult(orientClient::getGraph);
-        Stream<Vertex> o = awaitResult(x -> orientGraphAsync.query(ParamsRequest.buildRequest(SELECT_BY_LOGIN, loginName), x));
-        return o.count() == 0;
+    public void isUniqueLogin(RoutingContext requestHandler) {
+        String login = requestHandler.request().getParam("value");
+        orientClient.getGraph(connection -> {
+            if (connection.succeeded()) {
+                OrientGraphAsync result = connection.result();
+                result.query(ParamsRequest.buildRequest(SELECT_BY_LOGIN, login), requestResult -> {
+                    if (requestResult.succeeded()) {
+                        Stream<Vertex> result1 = requestResult.result();
+                        System.out.println(result1);
+                        Boolean b = result1.count() > 0;
+                        requestHandler.response()
+                                .putHeader("content-type", "application/json; charset=utf-8")
+                                .setStatusCode(200).end(b.toString());
+                    } else {
+                        requestHandler.response().setStatusCode(500).end();
+                    }
+                });
+            } else {
+                requestHandler.response().setStatusCode(500).end();
+            }
+        });
+
     }
 
 }

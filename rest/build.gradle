@@ -7,7 +7,6 @@ dependencies {
     compile project(":auth")
 
     compile group: 'io.vertx', name: 'vertx-core', version: '3.2.1'
-    compile group: 'io.vertx', name: 'vertx-sync', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-web', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-auth-jwt', version: '3.2.1'
     compile "co.paralleluniverse:quasar-core:0.7.4:jdk8"
