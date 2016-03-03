@@ -32,11 +32,11 @@ public abstract class LoginVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
         router.route().handler(CorsHandler.create("*"));
-        router.route().handler(JWTAuthHandler.create(provider, "/api/login"));
+        router.route().handler(JWTAuthHandler.create(provider, "/api/private/v1/login"));
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
         router.route().handler(UserSessionHandler.create(provider));
 
-        router.post("/api/login").handler(event -> {
+        router.post("/api/private/v1/login").handler(event -> {
             final JsonObject bodyAsJson = event.getBodyAsJson();
             try {
                 orientDBAuthProvider.authenticate(bodyAsJson, authEvent -> {
