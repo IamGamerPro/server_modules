@@ -21,7 +21,7 @@ public abstract class LoginVerticle extends AbstractVerticle {
     protected abstract void concrete(Router router);
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start() throws Exception {
         JsonObject config = new JsonObject().put("keyStore", new JsonObject()
                 .put("path", "keystore.jceks")
                 .put("type", "jceks")
@@ -55,8 +55,6 @@ public abstract class LoginVerticle extends AbstractVerticle {
             }
         });
         concrete(router);
-
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-
     }
 }
