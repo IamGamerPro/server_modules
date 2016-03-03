@@ -16,7 +16,7 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 /**
  * Created by sergey.kobets on 14.12.2015.
  */
-public abstract class LoginVerticle extends AbstractVerticle {
+public abstract class LoginRedirectVerticle extends AbstractVerticle {
 
     protected abstract void concrete(Router router);
 
