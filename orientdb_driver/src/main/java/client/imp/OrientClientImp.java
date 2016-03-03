@@ -101,16 +101,19 @@ public class OrientClientImp implements OrientClient {
                 Optional<String> url = Optional.ofNullable(config.getString("url"));
                 Optional<String> login = Optional.ofNullable(config.getString("login"));
                 Optional<String> pwd = Optional.ofNullable(config.getString("pwd"));
+                Optional<Integer> maxPoolSize = Optional.ofNullable(config.getInteger("max_pool_size"));
+                Optional<Integer> initialPoolSize = Optional.ofNullable(config.getInteger("initial_pool_size"));
+
                 if (!url.isPresent()) {
                     throw new RuntimeException();
                 }
                 OrientGraphFactory saveConfigInit =
-                        (login.isPresent() && pwd.isPresent())
-                                ? new OrientGraphFactory(url.get(),
-                                                         login.get(),
-                                                         pwd.get())
+                        (login.isPresent() && initialPoolSize.isPresent())
+                                ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
                                 : new OrientGraphFactory(url.get());
-                saveConfigInit.setupPool(50, 50);
+                if (maxPoolSize.isPresent()) {
+                    saveConfigInit.setupPool(initialPoolSize.orElse(1), maxPoolSize.get());
+                }
                 this.graphFactory = saveConfigInit;
             }
             return graphFactory;
@@ -123,11 +126,11 @@ public class OrientClientImp implements OrientClient {
         synchronized ExecutorService exec() {
             if (exec == null) {
                 exec = new ThreadPoolExecutor(1,
-                                              1,
-                                              1000L,
-                                              TimeUnit.MILLISECONDS,
-                                              new LinkedBlockingQueue<>(),
-                                              (r -> new Thread(r, "iamgamer-orient-service-get-graph")));
+                        1,
+                        1000L,
+                        TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<>(),
+                        (r -> new Thread(r, "iamgamer-orient-service-get-graph")));
             }
             return exec;
         }
