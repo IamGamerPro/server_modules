@@ -16,11 +16,9 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 /**
  * Created by sergey.kobets on 14.12.2015.
  */
-public abstract class CoreVerticleImp extends AbstractVerticle {
+public abstract class LoginVerticle extends AbstractVerticle {
 
-    protected Router router;
-
-    protected abstract void concrete();
+    protected abstract void concrete(Router router);
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -31,7 +29,7 @@ public abstract class CoreVerticleImp extends AbstractVerticle {
         OrientClient databaseClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "loginPool");
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
-        router = Router.router(vertx);
+        Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
         router.route().handler(CorsHandler.create("*"));
         router.route().handler(JWTAuthHandler.create(provider, "/api/login"));
@@ -56,7 +54,7 @@ public abstract class CoreVerticleImp extends AbstractVerticle {
                 event.response().setStatusCode(403).end();
             }
         });
-        concrete();
+        concrete(router);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 
