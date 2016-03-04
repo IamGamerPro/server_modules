@@ -8,6 +8,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.LoggerHandler;
 import io.vertx.ext.web.handler.ResponseTimeHandler;
+import pro.iamgamer.routing.RouteOrchestrator;
+import services.configuration.RouteOrchestratorRuleImp;
 
 /**
  * Created by Sergey Kobets on 27.02.2016.
@@ -17,17 +19,16 @@ public class RegisterVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
+        RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api", new RouteOrchestratorRuleImp());
         databaseClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "registerPool");
         RegisterService registerService = new RegisterService(databaseClient);
         Router router = Router.router(vertx);
-        router.route().handler(BodyHandler.create());
-        router.route().handler(CorsHandler.create("*"));
-        router.route().handler(ResponseTimeHandler.create());
-        router.route().handler(LoggerHandler.create());
-        router.get("/api/private/v1/user-exists").handler(registerService::isUniqueLogin);
-        router.get("/api/private/v1/email-exists").handler(registerService::isUniqueEmail);
-        router.post("/api/private/v1/register").handler(registerService::register);
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+
+        router.get("/user-exists").handler(registerService::isUniqueLogin);
+        router.get("/email-exists").handler(registerService::isUniqueEmail);
+        router.post("/register").handler(registerService::register);
+        instance.mountSubRouter("/register/v1/", router);
+        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
     }
 
     @Override

@@ -1,3 +1,5 @@
+package pro.iamgamer.routing;
+
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 

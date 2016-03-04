@@ -30,7 +30,7 @@ public class OrientDBAuthProviderImp implements OrientDBAuthProvider {
 
     @Override
     public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
-        String username = authInfo.getString("username");
+        String username = authInfo.getString("login");
         if (username == null) {
             resultHandler.handle(Future.failedFuture("authInfo must contain username in 'username' field"));
             return;

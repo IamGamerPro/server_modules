@@ -3,25 +3,27 @@ package services;
 import auth.OrientDBAuthProvider;
 import client.OrientClient;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.Session;
-import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.handler.JWTAuthHandler;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.handler.UserSessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
+import pro.iamgamer.routing.RouteOrchestrator;
+import services.configuration.RouteOrchestratorRuleImp;
 
 
 /**
  * Created by sergey.kobets on 14.12.2015.
  */
-public abstract class LoginRedirectVerticle extends AbstractVerticle {
-
-    protected abstract void concrete(Router router);
+public class LoginVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
+        RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api", new RouteOrchestratorRuleImp());
         JsonObject config = new JsonObject().put("keyStore", new JsonObject()
                 .put("path", "keystore.jceks")
                 .put("type", "jceks")
@@ -30,13 +32,12 @@ public abstract class LoginRedirectVerticle extends AbstractVerticle {
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
         Router router = Router.router(vertx);
-        router.route().handler(BodyHandler.create());
-        router.route().handler(CorsHandler.create("*"));
-        router.route().handler(JWTAuthHandler.create(provider, "/api/private/v1/login"));
+        router.route().handler(JWTAuthHandler.create(provider, "/v1/login"));
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
         router.route().handler(UserSessionHandler.create(provider));
+        instance.mountSubRouter("/private", router);
 
-        router.post("/api/private/v1/login").handler(event -> {
+        router.post("/v1/login").handler(event -> {
             final JsonObject bodyAsJson = event.getBodyAsJson();
             try {
                 orientDBAuthProvider.authenticate(bodyAsJson, authEvent -> {
@@ -54,7 +55,6 @@ public abstract class LoginRedirectVerticle extends AbstractVerticle {
                 event.response().setStatusCode(403).end();
             }
         });
-        concrete(router);
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
     }
 }

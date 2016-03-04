@@ -32,7 +32,7 @@ public class AuthTest {
     private static OrientDBAuthProvider authProvider;
     private static Vertx vertx;
     private static List<Long> time = new ArrayList<>();
-    private static final JsonObject user = new JsonObject("{\"username\":\"testSuccess\", \"password\": \"dfltpwd\"}");
+    private static final JsonObject user = new JsonObject("{\"login\":\"testSuccess\", \"password\": \"dfltpwd\"}");
 
     @Rule
     public RepeatRule rule = new RepeatRule();
@@ -75,7 +75,7 @@ public class AuthTest {
     @Test
     public void incorrectLogin(TestContext context) {
         Async async = context.async(1);
-        authProvider.authenticate(new JsonObject("{\"username\":\"test\", \"password\": \"dfltpwd\"}"), event -> {
+        authProvider.authenticate(new JsonObject("{\"login\":\"test\", \"password\": \"dfltpwd\"}"), event -> {
             context.assertTrue(event.failed());
             context.assertEquals(event.cause().getMessage(), "Не правильное имя пользователя или пароль");
             async.countDown();

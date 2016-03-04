@@ -3,7 +3,7 @@ include 'core'
 include 'rest'
 include 'orientdb_driver'
 include 'auth'
-include 'route-orchestrator'
+include 'route_orchestrator'
 
 
 

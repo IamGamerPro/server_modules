@@ -5,7 +5,7 @@ dependencies {
     compile project(":core")
     compile project(":orientdb_driver")
     compile project(":auth")
-
+    compile project(":route_orchestrator")
     compile group: 'io.vertx', name: 'vertx-core', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-web', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-auth-jwt', version: '3.2.1'
