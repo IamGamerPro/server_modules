@@ -1,6 +1,9 @@
-rootProject.name = 'server'
+rootProject.name = 'server_modules'
 include 'core'
 include 'rest'
 include 'orientdb_driver'
 include 'auth'
+include 'route-orchestrator'
+
+
 
