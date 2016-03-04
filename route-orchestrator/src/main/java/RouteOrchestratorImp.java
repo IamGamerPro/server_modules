@@ -14,36 +14,36 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
 
     public RouteOrchestratorImp(Vertx vertx, String webroot) {
         this.vertx = vertx;
-        this.holder = lookup(vertx, webroot);
+        this.holder = lookupHolder(vertx, webroot);
         this.baseRouter = holder.router();
     }
 
-    private BaseRouterHolder lookup(Vertx vertx, String webroot) {
+    private BaseRouterHolder lookupHolder(Vertx vertx, String webroot) {
         synchronized (vertx) {
             LocalMap<String, BaseRouterHolder> cashedPool =
-                    vertx.sharedData().getLocalMap("trololol");
-            BaseRouterHolder baseRouter = cashedPool.get(webroot);
-            if (baseRouter == null) {
-                baseRouter = new BaseRouterHolder(vertx);
-                cashedPool.put(webroot, baseRouter);
+                    vertx.sharedData().getLocalMap("routers");
+            BaseRouterHolder holder = cashedPool.get(webroot);
+            if (holder == null) {
+                holder = new BaseRouterHolder(vertx);
+                cashedPool.put(webroot, holder);
             }
-            return baseRouter;
+            return holder;
         }
     }
 
     private static class BaseRouterHolder implements Shareable {
         private final Vertx vertx;
-        private Router baseRouter;
+        private Router router;
 
         private BaseRouterHolder(Vertx vertx) {
             this.vertx = vertx;
         }
 
         private synchronized Router router() {
-            if (baseRouter == null) {
-                baseRouter = Router.router(vertx);
+            if (router == null) {
+                router = Router.router(vertx);
             }
-            return baseRouter;
+            return router;
 
         }
 
