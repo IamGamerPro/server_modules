@@ -15,10 +15,14 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
     private final BaseRouterHolder holder;
     private final Router baseRouter;
 
-    public RouteOrchestratorImp(Vertx vertx, String webroot, final Handler<RoutingContext>[] rootHandlers) {
+    public RouteOrchestratorImp(Vertx vertx, String webroot) {
+        this(vertx, webroot, null);
+    }
+
+    public RouteOrchestratorImp(Vertx vertx, String webroot, RouteOrchestratorRule routeOrchestratorRule) {
         this.vertx = vertx;
         this.holder = lookupHolder(vertx, webroot);
-        this.baseRouter = holder.router(rootHandlers);
+        this.baseRouter = holder.router(routeOrchestratorRule);
     }
 
     private BaseRouterHolder lookupHolder(Vertx vertx, String webroot) {
@@ -42,12 +46,14 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
             this.vertx = vertx;
         }
 
-        private synchronized Router router(Handler<RoutingContext>[] rootHandlers) {
+        private synchronized Router router(RouteOrchestratorRule routeOrchestratorRule) {
             if (router == null) {
                 router = Router.router(vertx);
-            }
-            for (Handler<RoutingContext> rootHandler : rootHandlers) {
-                router.route().handler(rootHandler);
+                if (routeOrchestratorRule != null) {
+                    for (Handler<RoutingContext> handler : routeOrchestratorRule.baseHandlers()) {
+                        router.route().handler(handler);
+                    }
+                }
             }
             return router;
 
