@@ -1,6 +1,7 @@
 group 'pro.iamgamer'
 version '0.0.2'
 apply plugin: 'application'
+apply plugin: 'idea'
 
 
 mainClassName = 'Starter'
@@ -14,7 +15,6 @@ dependencies {
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: "idea"
     javadoc {
         options.charSet = 'UTF-8'
     }
