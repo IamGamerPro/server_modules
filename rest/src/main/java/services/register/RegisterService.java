@@ -9,15 +9,23 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import services.Errors;
 
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static services.Errors.responseError;
 
 /**
  * Created by Sergey Kobets on 27.02.2016.
  */
 public class RegisterService {
-    public static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
-    public static final OCommandSQL SELECT_BY_EMAIL = new OCommandSQL("select 1 from User where email = ?");
+    private static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
+    private static final OCommandSQL SELECT_BY_EMAIL = new OCommandSQL("select 1 from User where email = ?");
+    private static final Pattern validPassword = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?!.*[а-яА-ЯёЁ])(?=.*[A-Z])(?=.*[a-z]).*$");
+    private static final String MANDATORY_REGISTER_PARAM = Errors.responseError("Поля: имя пользователя, пароль и email обязательны для заполнения");
+    private static final String WEAK_PASSWORD = Errors.responseError("Пароль должен иметь длинну не менее 8 символов, состоять из латинских букв верхнего и нижнего регистра, и содержать цифры");
+
     private final OrientClient orientClient;
 
     public RegisterService(OrientClient orientClient) {
@@ -40,7 +48,11 @@ public class RegisterService {
         String password = bodyAsJson.getString("password");
         String email = bodyAsJson.getString("email");
         if (login == null || email == null || password == null) {
-            routingContext.response().setStatusCode(400);
+            routingContext.response().setStatusCode(400).end(MANDATORY_REGISTER_PARAM);
+            return;
+        }
+        if (!validPassword.matcher(password).matches()) {
+            routingContext.response().setStatusCode(400).end(WEAK_PASSWORD);
             return;
         }
         orientClient.getGraph(connection -> {
