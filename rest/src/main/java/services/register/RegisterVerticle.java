@@ -26,7 +26,7 @@ public class RegisterVerticle extends AbstractVerticle {
 
         router.get("/user-exists").handler(registerService::isUniqueLogin);
         router.get("/email-exists").handler(registerService::isUniqueEmail);
-        router.post("/register").handler(registerService::register);
+        router.post().handler(registerService::register);
         instance.mountSubRouter("/register/v1/", router);
         vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
     }
