@@ -44,7 +44,7 @@ public class LoginVerticle extends AbstractVerticle {
                     if (authEvent.succeeded()) {
                         final String chunk =
                                 provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360L));
-                        event.response().end(chunk);
+                        event.response().putHeader("x-jwt-token", chunk).end();
                     } else {
                         event.response().setStatusCode(403).end();
                     }
