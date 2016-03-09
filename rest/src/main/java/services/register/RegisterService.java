@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class RegisterService {
     private static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
     private static final OCommandSQL SELECT_BY_EMAIL = new OCommandSQL("select 1 from User where email = ?");
-    private static final Pattern validPassword = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?!.*[а-яА-ЯёЁ])(?=.*[A-Z])(?=.*[a-z]).*$");
+    /*private static final Pattern validPassword = Pattern.compile("(?=^.{6,18}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");*/
     private static final String MANDATORY_REGISTER_PARAM = Responses.errorMessage("Поля: имя пользователя, пароль и email обязательны для заполнения");
     private static final String WEAK_PASSWORD = Responses.errorMessage("Пароль должен иметь длинну не менее 8 символов, состоять из латинских букв верхнего и нижнего регистра, и содержать цифры");
 
@@ -49,7 +49,7 @@ public class RegisterService {
             routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(MANDATORY_REGISTER_PARAM);
             return;
         }
-        if (!validPassword.matcher(password).matches()) {
+        if (/*!validPassword.matcher(password).matches()*/false) {
             routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(WEAK_PASSWORD);
             return;
         }
