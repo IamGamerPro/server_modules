@@ -9,12 +9,10 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import services.Errors;
+import services.Responses;
 
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import static services.Errors.responseError;
 
 /**
  * Created by Sergey Kobets on 27.02.2016.
@@ -23,8 +21,8 @@ public class RegisterService {
     private static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
     private static final OCommandSQL SELECT_BY_EMAIL = new OCommandSQL("select 1 from User where email = ?");
     private static final Pattern validPassword = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?!.*[а-яА-ЯёЁ])(?=.*[A-Z])(?=.*[a-z]).*$");
-    private static final String MANDATORY_REGISTER_PARAM = Errors.responseError("Поля: имя пользователя, пароль и email обязательны для заполнения");
-    private static final String WEAK_PASSWORD = Errors.responseError("Пароль должен иметь длинну не менее 8 символов, состоять из латинских букв верхнего и нижнего регистра, и содержать цифры");
+    private static final String MANDATORY_REGISTER_PARAM = Responses.errorMessage("Поля: имя пользователя, пароль и email обязательны для заполнения");
+    private static final String WEAK_PASSWORD = Responses.errorMessage("Пароль должен иметь длинну не менее 8 символов, состоять из латинских букв верхнего и нижнего регистра, и содержать цифры");
 
     private final OrientClient orientClient;
 
@@ -91,7 +89,7 @@ public class RegisterService {
                         Boolean b = result1.count() > 0;
                         routingContext.response()
                                 .putHeader("content-type", "application/json; charset=utf-8")
-                                .setStatusCode(200).end(b.toString());
+                                .setStatusCode(200).end(Responses.resultMessage(b.toString()));
                     } else {
                         routingContext.response().setStatusCode(500).end();
                     }
