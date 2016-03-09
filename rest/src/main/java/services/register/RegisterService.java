@@ -46,11 +46,11 @@ public class RegisterService {
         String password = bodyAsJson.getString("password");
         String email = bodyAsJson.getString("email");
         if (login == null || email == null || password == null) {
-            routingContext.response().setStatusCode(400).end(MANDATORY_REGISTER_PARAM);
+            routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(MANDATORY_REGISTER_PARAM);
             return;
         }
         if (!validPassword.matcher(password).matches()) {
-            routingContext.response().setStatusCode(400).end(WEAK_PASSWORD);
+            routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(WEAK_PASSWORD);
             return;
         }
         orientClient.getGraph(connection -> {
@@ -69,11 +69,11 @@ public class RegisterService {
                             if (requestResult.succeeded()) {
                                 routingContext.response().setStatusCode(201).end();
                             } else {
-                                routingContext.response().setStatusCode(500);
+                                routingContext.response().setStatusCode(500).end();
                             }
                         });
             } else {
-                routingContext.response().setStatusCode(500);
+                routingContext.response().setStatusCode(500).end();
             }
         });
     }
