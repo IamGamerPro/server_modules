@@ -32,20 +32,18 @@ public class LoginVerticle extends AbstractVerticle {
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
         Router router = Router.router(vertx);
-        router.route().handler(JWTAuthHandler.create(provider, "/v1/login"));
+        router.route().handler(JWTAuthHandler.create(provider, "/login"));
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
         router.route().handler(UserSessionHandler.create(provider));
         instance.mountSubRouter("/private", router);
 
-        router.post("/v1/login").handler(event -> {
+        router.post("/login").handler(event -> {
             final JsonObject bodyAsJson = event.getBodyAsJson();
             try {
                 orientDBAuthProvider.authenticate(bodyAsJson, authEvent -> {
                     if (authEvent.succeeded()) {
                         final String chunk =
                                 provider.generateToken(new JsonObject(), new JWTOptions().setExpiresInSeconds(360L));
-                        final Session session = event.session();
-                        session.put("currentToken", chunk);
                         event.response().end(chunk);
                     } else {
                         event.response().setStatusCode(403).end();
