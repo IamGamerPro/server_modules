@@ -28,6 +28,8 @@ public final class OrientGraphCommandAsyncDecorator<T> {
             future.complete(result);
         } catch (Exception e) {
             future.fail(e);
+        } finally {
+            orientGraph.shutdown();
         }
     }
 
