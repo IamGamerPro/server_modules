@@ -50,8 +50,8 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
     @Override
     public void handle(RoutingContext context) {
         HttpServerRequest request = context.request();
-
-        if (request.method() == HttpMethod.GET) {
+        HttpMethod method = request.method();
+        if (method != HttpMethod.POST && method != HttpMethod.PUT && method != HttpMethod.DELETE) {
             context.next();
         }
 
@@ -68,7 +68,7 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         }
         String createTS = tokenParts[2];
 
-        if (!isExpired(createTS)){
+        if (!isExpired(createTS)) {
             context.next();
             return;
         }
@@ -84,7 +84,7 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         return signature.equals(tokenParts[2]);
     }
 
-    public boolean isExpired(String time){
+    public boolean isExpired(String time) {
         try {
             return (System.currentTimeMillis() > Long.parseLong(time) + timeout);
         } catch (NumberFormatException e) {
@@ -93,7 +93,7 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
     }
 
     /*STUB*/
-    public boolean isLastToken(){
+    public boolean isLastToken() {
         return true;
     }
 
