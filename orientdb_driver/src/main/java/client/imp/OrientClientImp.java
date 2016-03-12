@@ -112,7 +112,7 @@ public class OrientClientImp implements OrientClient {
                                 ? new OrientGraphFactory(url.get(), login.get(), pwd.get())
                                 : new OrientGraphFactory(url.get());
                 if (maxPoolSize.isPresent()) {
-                    saveConfigInit.setupPool(initialPoolSize.orElse(1), maxPoolSize.get());
+                    saveConfigInit.setupPool(initialPoolSize.orElse(1), maxPoolSize.orElse(1));
                 }
                 this.graphFactory = saveConfigInit;
             }
