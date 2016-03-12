@@ -59,7 +59,8 @@ public class DatabaseDriverTest {
         orientClient.getGraph(handler -> {
             if (handler.succeeded()) {
                 OrientGraphAsync result = handler.result();
-                result.command(buildRequest(new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }"), "as"), v -> {
+                OCommandSQL request = new OCommandSQL("CREATE VERTEX EMPLOYEE CONTENT { \"name\" : \"Jay\", \"surname\" : \"Miner\", \"lol\" : ? }");
+                result.command(buildRequest(request, "as"), v -> {
                     System.out.println(TimeUnit.MILLISECONDS.convert(System.nanoTime() - l, TimeUnit.NANOSECONDS));
                     async.complete();
                 });
