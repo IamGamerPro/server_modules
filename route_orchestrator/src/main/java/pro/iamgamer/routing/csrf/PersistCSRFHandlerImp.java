@@ -93,7 +93,7 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
             context.next();
         } else {
             context.fail(403);
-
+            context.next();
         }
     }
 
