@@ -54,6 +54,7 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         HttpMethod method = request.method();
         if (method != HttpMethod.POST && method != HttpMethod.PUT && method != HttpMethod.DELETE) {
             context.next();
+            return;
         }
 
         String token = request.getHeader(headerName);
@@ -68,18 +69,31 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
             return;
         }
 
-        if (isNedRegenerate(tokenParts[1])) {
-            context.response().putHeader(DEFAULT_HEADER_NAME, generateToken());
-            context.next();
+        try {
+            final long parseTs = Long.parseLong(tokenParts[1]);
+
+            if (isValidTS(parseTs)) {
+                context.next();
+                return;
+            }
+
+            if (isNedRegenerate(parseTs)) {
+                context.response().putHeader(DEFAULT_HEADER_NAME, generateToken());
+                context.next();
+                return;
+            }
+
+        } catch (NumberFormatException e) {
+            context.fail(403);
             return;
         }
 
         if (isLastKnownToken()) {
             context.response().putHeader(DEFAULT_HEADER_NAME, generateToken());
             context.next();
-            return;
         } else {
             context.fail(403);
+
         }
     }
 
@@ -97,11 +111,14 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         return false;
     }
 
-    public boolean isNedRegenerate(String tokenTs) {
-        long parseTs = Long.parseLong(tokenTs);
+    public boolean isValidTS(Long tokenTs) {
+        return System.currentTimeMillis() < tokenTs + regenerationTimeout;
+    }
+
+    public boolean isNedRegenerate(long tokenTs) {
         long now = System.currentTimeMillis();
-        return (now > parseTs + regenerationTimeout
-                && now < parseTs + invalidationTimeout);
+        return (now > tokenTs + regenerationTimeout
+                && now < tokenTs + invalidationTimeout);
     }
 
     @Override
