@@ -8,7 +8,8 @@ import io.vertx.ext.web.RoutingContext;
  */
 public interface PersistCSRFHandler extends Handler<RoutingContext> {
     String DEFAULT_HEADER_NAME = "X-XSRF-TOKEN";
-    long DEFAULT_TIMEOUT = 30 * 60 * 1000;
+    long DEFAULT_INVALIDATION_TIMEOUT = 60 * 60 * 1000;
+    long DEFAULT_REGENERATION_TIMEOUT = 15 * 60 * 1000;
 
     static PersistCSRFHandler create(String secret) {
         return new PersistCSRFHandlerImp(secret);
@@ -20,5 +21,5 @@ public interface PersistCSRFHandler extends Handler<RoutingContext> {
 
     PersistCSRFHandler setNagHttps(boolean nag);
 
-    PersistCSRFHandler setTimeout(long timeout);
+    PersistCSRFHandler setTimeouts(long regeneration, long invalidation);
 }

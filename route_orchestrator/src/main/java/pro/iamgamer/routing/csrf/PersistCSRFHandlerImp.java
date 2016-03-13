@@ -23,7 +23,8 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
 
     private final Random RAND = new SecureRandom();
     private final Mac mac;
-    private long timeout = DEFAULT_TIMEOUT;
+    private long invalidationTimeout = DEFAULT_INVALIDATION_TIMEOUT;
+    private long regenerationTimeout = DEFAULT_REGENERATION_TIMEOUT;
     private boolean nagHttps;
     private String headerName = DEFAULT_HEADER_NAME;
 
@@ -66,11 +67,19 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
             context.fail(403);
             return;
         }
-        String createTS = tokenParts[2];
 
-        if (!isExpired(createTS)) {
+        if (isNedRegenerate(tokenParts[1])) {
+            context.response().putHeader(DEFAULT_HEADER_NAME, generateToken());
             context.next();
             return;
+        }
+
+        if (isLastKnownToken()) {
+            context.response().putHeader(DEFAULT_HEADER_NAME, generateToken());
+            context.next();
+            return;
+        } else {
+            context.fail(403);
         }
     }
 
@@ -84,17 +93,15 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         return signature.equals(tokenParts[2]);
     }
 
-    public boolean isExpired(String time) {
-        try {
-            return (System.currentTimeMillis() > Long.parseLong(time) + timeout);
-        } catch (NumberFormatException e) {
-            return true;
-        }
+    public boolean isLastKnownToken() {
+        return false;
     }
 
-    /*STUB*/
-    public boolean isLastToken() {
-        return true;
+    public boolean isNedRegenerate(String tokenTs) {
+        long parseTs = Long.parseLong(tokenTs);
+        long now = System.currentTimeMillis();
+        return (now > parseTs + regenerationTimeout
+                && now < parseTs + invalidationTimeout);
     }
 
     @Override
@@ -110,8 +117,12 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
     }
 
     @Override
-    public PersistCSRFHandler setTimeout(long timeout) {
-        this.timeout = timeout;
+    public PersistCSRFHandler setTimeouts(long regeneration, long invalidation) {
+        if (regeneration > invalidation) {
+            throw new IllegalArgumentException();
+        }
+        this.invalidationTimeout = invalidation;
+        this.regenerationTimeout = regeneration;
         return this;
     }
 }
