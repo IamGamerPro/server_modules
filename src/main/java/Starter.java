@@ -1,6 +1,6 @@
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
-import services.LoginVerticle;
+import services.user.PrivateUserPageTest;
 import services.register.RegisterVerticle;
 
 import java.time.LocalTime;
@@ -16,7 +16,7 @@ public class Starter {
         Vertx vertx = Vertx.vertx();
         Router router = Router.router(vertx);
         vertx.deployVerticle(new RegisterVerticle());
-        vertx.deployVerticle(new LoginVerticle());
+        vertx.deployVerticle(new PrivateUserPageTest());
         System.out.println(LocalTime.now() + " server started successfully");
     }
 }
