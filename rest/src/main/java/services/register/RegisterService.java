@@ -92,7 +92,7 @@ public class RegisterService {
                         Boolean b = result1.count() > 0;
                         routingContext.response()
                                 .putHeader("content-type", MediaType.JSON_UTF_8.toString())
-                                .setStatusCode(200).end(Responses.resultMessage(b.toString()));
+                                .setStatusCode(200).end(Responses.resultMessage(b));
                     } else {
                         routingContext.response().setStatusCode(500).end();
                     }
