@@ -141,4 +141,9 @@ class PersistCSRFHandlerImp implements PersistCSRFHandler {
         this.regenerationTimeout = regeneration;
         return this;
     }
+
+    @Override
+    public String getHeaderName() {
+        return headerName;
+    }
 }

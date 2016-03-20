@@ -7,6 +7,10 @@ import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.AuthHandler;
+import pro.iamgamer.routing.imp.IamGamerRule;
+
+import java.util.Objects;
 
 /**
  * Created by Sergey Kobets on 04.03.2016.
@@ -15,15 +19,17 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
     private final static String SHARED = "iamgamer.shared.Routers";
     private final Vertx vertx;
     private final BaseRouterHolder holder;
+    private final RouteOrchestratorRule routeOrchestratorRule;
     private final Router baseRouter;
 
     public RouteOrchestratorImp(Vertx vertx, String webroot) {
-        this(vertx, webroot, null);
+        this(vertx, webroot, new IamGamerRule());
     }
 
     public RouteOrchestratorImp(Vertx vertx, String webroot, RouteOrchestratorRule routeOrchestratorRule) {
         this.vertx = vertx;
         this.holder = lookupHolder(vertx, webroot);
+        this.routeOrchestratorRule = routeOrchestratorRule;
         this.baseRouter = holder.router(routeOrchestratorRule);
     }
 
@@ -49,6 +55,7 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
         }
 
         private synchronized Router router(RouteOrchestratorRule routeOrchestratorRule) {
+            Objects.nonNull(routeOrchestratorRule);
             if (router == null) {
                 router = Router.router(vertx);
                 if (routeOrchestratorRule != null) {
@@ -56,17 +63,29 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                         router.route().handler(handler);
                     }
                 }
+                routeOrchestratorRule.buildAuthHandler(router, vertx);
             }
             return router;
 
         }
-
     }
 
     @Override
-    public Router mountSubRouter(String mountPoint, Router subRouter) {
+    public Router mountPublicSubRouter(String mountPoint, Router subRouter) {
+        if (mountPoint.endsWith("*")) {
+            throw new IllegalArgumentException("Don't include * when mounting subrouter");
+        }
+        if (mountPoint.contains(":")) {
+            throw new IllegalArgumentException("Can't use patterns in subrouter mounts");
+        }
         return baseRouter.mountSubRouter(mountPoint, subRouter);
     }
+
+    @Override
+    public Router mountRequiresAuthorizationSubRouter(String mountPoint, Router subRouter) {
+        return mountPublicSubRouter(routeOrchestratorRule.privateUrlPatch() + mountPoint, subRouter);
+    }
+
 
     @Override
     public void accept(HttpServerRequest request) {

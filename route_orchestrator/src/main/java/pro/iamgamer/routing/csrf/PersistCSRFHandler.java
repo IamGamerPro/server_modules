@@ -19,6 +19,10 @@ public interface PersistCSRFHandler extends Handler<RoutingContext> {
 
     PersistCSRFHandler setHeaderName(String name);
 
+    default String getHeaderName(){
+        return DEFAULT_HEADER_NAME;
+    }
+
     PersistCSRFHandler setNagHttps(boolean nag);
 
     PersistCSRFHandler setTimeouts(long regeneration, long invalidation);

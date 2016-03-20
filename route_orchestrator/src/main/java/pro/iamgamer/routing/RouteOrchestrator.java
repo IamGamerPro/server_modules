@@ -17,14 +17,8 @@ public interface RouteOrchestrator {
         return new RouteOrchestratorImp(vertx, webroot);
     }
 
-    static RouteOrchestrator getInstance(Vertx vertx, String webroot, RouteOrchestratorRule routeOrchestratorRule) {
-        Objects.nonNull(vertx);
-        Objects.nonNull(webroot);
-        Objects.nonNull(routeOrchestratorRule);
-        return new RouteOrchestratorImp(vertx, webroot, routeOrchestratorRule);
-    }
-
-    Router mountSubRouter(String mountPoint, Router subRouter);
+    Router mountPublicSubRouter(String mountPoint, Router subRouter);
+    Router mountRequiresAuthorizationSubRouter(String mountPoint, Router subRouter);
 
     void accept(HttpServerRequest request);
 }
