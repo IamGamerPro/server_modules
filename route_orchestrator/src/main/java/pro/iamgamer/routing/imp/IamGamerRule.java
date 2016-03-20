@@ -39,7 +39,7 @@ public class IamGamerRule implements RouteOrchestratorRule {
         OrientClient databaseClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "loginPool");
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
-        JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider, "/login");
+        JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
         String privatePaths = this.privateUrlPatch() + "/*";
         router.route(privatePaths).handler(jwtAuthHandler);
         PersistCSRFHandler csrfHandler = PersistCSRFHandler.create("qwerty1234");
@@ -52,7 +52,7 @@ public class IamGamerRule implements RouteOrchestratorRule {
 
                     requestHandler.response()
                             .putHeader(csrfHandler.getHeaderName(), s)
-                            .putHeader("x-jwt-token", provider.generateToken(new JsonObject(), new JWTOptions()
+                            .putHeader("X-JWT-TOKEN", provider.generateToken(new JsonObject(), new JWTOptions()
                                     .setExpiresInMinutes(10080L)))
                             .end();
                 }
