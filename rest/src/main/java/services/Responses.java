@@ -11,7 +11,7 @@ public class Responses {
         entries.put("error", s);
         return entries.encode();
     }
-    public static String resultMessage(String s){
+    public static String resultMessage(Boolean s){
         JsonObject entries = new JsonObject();
         entries.put("result", s);
         return entries.encode();
