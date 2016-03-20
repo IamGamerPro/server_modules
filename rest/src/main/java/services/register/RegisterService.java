@@ -4,6 +4,7 @@ import auth.imp.security.PasswordUtils;
 import client.OrientClient;
 import client.OrientGraphAsync;
 import client.imp.ParamsRequest;
+import com.google.common.net.MediaType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
@@ -11,6 +12,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import services.Responses;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -36,8 +38,8 @@ public class RegisterService {
     }
 
     public void isUniqueEmail(RoutingContext requestHandler) {
-        String login = requestHandler.request().getParam("value");
-        isExist(requestHandler, ParamsRequest.buildRequest(SELECT_BY_EMAIL, login));
+        String email = requestHandler.request().getParam("value");
+        isExist(requestHandler, ParamsRequest.buildRequest(SELECT_BY_EMAIL, email));
     }
 
     public void register(RoutingContext routingContext) {
@@ -46,11 +48,11 @@ public class RegisterService {
         String password = bodyAsJson.getString("password");
         String email = bodyAsJson.getString("email");
         if (login == null || email == null || password == null) {
-            routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(MANDATORY_REGISTER_PARAM);
+            routingContext.response().setStatusCode(400).putHeader("content-type", MediaType.JSON_UTF_8.toString()).end(MANDATORY_REGISTER_PARAM);
             return;
         }
         if (/*!validPassword.matcher(password).matches()*/false) {
-            routingContext.response().setStatusCode(400).putHeader("content-type", "application/json; charset=utf-8").end(WEAK_PASSWORD);
+            routingContext.response().setStatusCode(400).putHeader("content-type", MediaType.JSON_UTF_8.toString()).end(WEAK_PASSWORD);
             return;
         }
         orientClient.getGraph(connection -> {
@@ -88,7 +90,7 @@ public class RegisterService {
                         System.out.println(result1);
                         Boolean b = result1.count() > 0;
                         routingContext.response()
-                                .putHeader("content-type", "application/json; charset=utf-8")
+                                .putHeader("content-type", MediaType.JSON_UTF_8.toString())
                                 .setStatusCode(200).end(Responses.resultMessage(b.toString()));
                     } else {
                         routingContext.response().setStatusCode(500).end();
