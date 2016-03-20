@@ -6,11 +6,10 @@ import com.google.common.collect.Sets;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.jwt.JWTAuth;
+import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.AuthHandler;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.JWTAuthHandler;
@@ -48,9 +47,14 @@ public class IamGamerRule implements RouteOrchestratorRule {
         router.post("/login").handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
             orientDBAuthProvider.authenticate(authParams, event -> {
-                if(event.succeeded()){
+                if (event.succeeded()) {
                     String s = csrfHandler.generateToken();
-                    requestHandler.response().putHeader(csrfHandler.getHeaderName(), s).end();
+
+                    requestHandler.response()
+                            .putHeader(csrfHandler.getHeaderName(), s)
+                            .putHeader("x-jwt-token", provider.generateToken(new JsonObject(), new JWTOptions()
+                                    .setExpiresInMinutes(10080L)))
+                            .end();
                 }
                 requestHandler.fail(403);
             });
