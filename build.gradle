@@ -3,7 +3,6 @@ version '0.0.2'
 apply plugin: 'application'
 apply plugin: 'idea'
 
-
 mainClassName = 'Starter'
 
 dependencies {
