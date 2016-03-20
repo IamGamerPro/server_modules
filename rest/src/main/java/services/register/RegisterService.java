@@ -8,6 +8,7 @@ import com.google.common.net.MediaType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import services.Responses;
@@ -69,7 +70,7 @@ public class RegisterService {
                         },
                         requestResult -> {
                             if (requestResult.succeeded()) {
-                                routingContext.response().setStatusCode(201).end();
+                                routingContext.reroute(HttpMethod.POST, "private/login");
                             } else {
                                 routingContext.response().setStatusCode(500).end();
                             }
