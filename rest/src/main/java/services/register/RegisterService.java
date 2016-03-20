@@ -70,7 +70,7 @@ public class RegisterService {
                         },
                         requestResult -> {
                             if (requestResult.succeeded()) {
-                                routingContext.reroute(HttpMethod.POST, "/private/login");
+                                routingContext.reroute(HttpMethod.POST, "/login");
                             } else {
                                 routingContext.response().setStatusCode(500).end();
                             }
