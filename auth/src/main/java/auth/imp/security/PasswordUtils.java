@@ -15,6 +15,7 @@ public final class PasswordUtils {
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 512;
     private static final int RANDOM_PASSWORD_LENGTH = 12;
+    private static final SecretKeyFactory skf = new SecretKeyFactoryHolder().getFactory();
 
     public static byte[] randomSalt() {
         byte[] salt = new byte[31];
@@ -26,9 +27,8 @@ public final class PasswordUtils {
         PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
         Arrays.fill(password, Character.MIN_VALUE);
         try {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             return skf.generateSecret(spec).getEncoded();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (InvalidKeySpecException e) {
             throw new RuntimeException(e);
         } finally {
             spec.clearPassword();
@@ -37,5 +37,19 @@ public final class PasswordUtils {
 
     public static String generateRandomPassword() {
         return RandomStringUtils.random(RANDOM_PASSWORD_LENGTH, 0, 0, true, true);
+    }
+
+    private static class SecretKeyFactoryHolder{
+        private final SecretKeyFactory secretKeyFactory;
+        SecretKeyFactoryHolder() {
+            try {
+                secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        SecretKeyFactory getFactory(){
+            return secretKeyFactory;
+        }
     }
 }
