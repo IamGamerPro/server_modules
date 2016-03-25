@@ -64,12 +64,13 @@ public class RegisterService {
                             final byte[] salt = PasswordUtils.randomSalt();
                             final byte[] hash = PasswordUtils.hash(password.toCharArray(), salt);
                             orientGraph.begin();
-                            OrientVertex orientVertex = orientGraph.addVertex("class:User", "login", login, "salt", salt, "password", hash);
+                            OrientVertex orientVertex = orientGraph.addVertex("class:User", "login", login, "salt", salt, "password", hash, "email", email);
                             orientGraph.commit();
                             return orientVertex.getId();
                         },
                         requestResult -> {
                             if (requestResult.succeeded()) {
+                                routingContext.response().setStatusCode(201);
                                 routingContext.reroute(HttpMethod.POST, "/login");
                             } else {
                                 routingContext.response().setStatusCode(500).end();
