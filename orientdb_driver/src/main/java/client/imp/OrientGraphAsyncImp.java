@@ -3,10 +3,7 @@ package client.imp;
 import client.OrientGraphAsync;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Context;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.json.JsonObject;
 
@@ -17,7 +14,7 @@ import java.util.stream.StreamSupport;
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
-public class OrientGraphAsyncImp implements OrientGraphAsync {
+public class OrientGraphAsyncImp implements OrientGraphAsync, Closeable {
     private final OrientGraph orientGraph;
     private final Vertx vertx;
     private final Context context;
@@ -55,5 +52,10 @@ public class OrientGraphAsyncImp implements OrientGraphAsync {
     public <T> OrientGraphAsync command(Function<OrientGraph, T> transactionalFunction, Handler<AsyncResult<T>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, transactionalFunction::apply).execute(resultHandler);
         return this;
+    }
+
+    @Override
+    public void close(Handler<AsyncResult<Void>> completionHandler) {
+        vertx.executeBlocking(future -> orientGraph.shutdown(true), completionHandler);
     }
 }
