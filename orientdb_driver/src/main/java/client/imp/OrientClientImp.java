@@ -4,6 +4,7 @@ import client.OrientClient;
 import client.OrientGraphAsync;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
@@ -57,6 +58,16 @@ public class OrientClientImp implements OrientClient {
             ctx.runOnContext(v -> future.setHandler(handler));
         });
         return this;
+    }
+
+    @Override
+    public OrientGraph getGraph() {
+        return orientGraphFactory.getTx();
+    }
+
+    @Override
+    public OrientGraphNoTx getGraphNoTx() {
+        return orientGraphFactory.getNoTx();
     }
 
     private OrientGraphFactoryHolder lookupHolder(String poolName, JsonObject config) {

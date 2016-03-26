@@ -36,9 +36,7 @@ public class OrientGraphAsyncImp implements OrientGraphAsync {
     @Override
     public final OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<Void>(vertx, orientGraph, context, (orientGraph) -> {
-            orientGraph.begin();
             orientGraph.command(request.getRequest()).execute(request.getParams());
-            orientGraph.commit();
             return null;
         }).execute(resultHandler);
         return this;

@@ -1,6 +1,8 @@
 package client;
 
 import client.imp.OrientClientImp;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -26,6 +28,18 @@ public interface OrientClient {
     }
 
     OrientClient getGraph(Handler<AsyncResult<OrientGraphAsync>> handler);
+
+    /**
+     * Транзакционнонный доступ к графу без асинхронной обертки
+     * Блокируюший метод!
+     */
+    OrientGraph getGraph();
+
+    /**
+     * Не транзакционный доступ к графу без асинхронной обертки
+     * Блокируюший метод!
+     */
+    OrientGraphNoTx getGraphNoTx();
 
     void close();
 }
