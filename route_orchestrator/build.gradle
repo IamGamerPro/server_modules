@@ -4,7 +4,7 @@ version '0.0.2'
 dependencies {
     compile project(":orientdb_driver")
     compile project(":auth")
-    compile group: 'com.orientechnologies', name: 'orientdb-core', version: '2.1.11'
+    compile group: 'com.orientechnologies', name: 'orientdb-core', version: '2.1.13'
     compile group: 'io.vertx', name: 'vertx-core', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-web', version: '3.2.1'
     compile group: 'io.vertx', name: 'vertx-auth-jwt', version: '3.2.1'
