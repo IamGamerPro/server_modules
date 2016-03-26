@@ -29,7 +29,7 @@ public final class OrientGraphCommandAsyncDecorator<T> {
         } catch (Exception e) {
             future.fail(e);
         } finally {
-            orientGraph.shutdown(false);
+            orientGraph.shutdown(true, true);
         }
     }
 
