@@ -44,9 +44,7 @@ public class OrientGraphAsyncImp implements OrientGraphAsync {
     @Override
     public OrientGraphAsync query(ParamsRequest request, Handler<AsyncResult<Stream<Vertex>>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, orientGraph -> {
-            orientGraph.begin();
             Iterable<Vertex> result = orientGraph.command(request.getRequest()).execute(request.getParams());
-            orientGraph.commit();
             return StreamSupport.stream(result.spliterator(), false);
         }).execute(resultHandler);
         return this;
