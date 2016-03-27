@@ -14,7 +14,7 @@ import java.util.stream.StreamSupport;
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
-public class OrientGraphAsyncImp implements OrientGraphAsync, Closeable {
+public class OrientGraphAsyncImp implements OrientGraphAsync {
     private final OrientGraph orientGraph;
     private final Vertx vertx;
     private final Context context;
@@ -56,10 +56,5 @@ public class OrientGraphAsyncImp implements OrientGraphAsync, Closeable {
     public <T> OrientGraphAsync command(Function<OrientGraph, T> transactionalFunction, Handler<AsyncResult<T>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, transactionalFunction::apply).execute(resultHandler);
         return this;
-    }
-
-    @Override
-    public void close(Handler<AsyncResult<Void>> completionHandler) {
-        vertx.executeBlocking(future -> orientGraph.shutdown(true), completionHandler);
     }
 }

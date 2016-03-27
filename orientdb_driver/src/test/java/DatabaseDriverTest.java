@@ -34,7 +34,8 @@ public class DatabaseDriverTest {
 
     @BeforeClass
     public static void beforeClass() {
-        OrientGraphFactory orientGraphFactory = new OrientGraphFactory("plocal:/test");
+        /*OrientGraphFactory orientGraphFactory = new OrientGraphFactory("plocal:/test");*/
+        OrientGraphFactory orientGraphFactory = new OrientGraphFactory("remote:localhost/test", "root", "avt564180");
         OrientGraphNoTx noTx = orientGraphFactory.getNoTx();
         try {
             noTx.command(new OCommandSQL("DROP CLASS EMPLOYEE UNSAFE")).execute();
@@ -48,7 +49,13 @@ public class DatabaseDriverTest {
 
     @Before
     public void init() {
-        orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "as");
+        //orientClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "as");
+        JsonObject dataBaseConfig = new JsonObject()
+                .put("url", "remote:localhost/test")
+                .put("login", "root")
+                .put("pwd", "avt564180")
+                .put("max_pool_size", 50);
+        orientClient = OrientClient.createShared(vertx, dataBaseConfig, "testPool");
     }
 
     @Repeat(760)
@@ -72,7 +79,7 @@ public class DatabaseDriverTest {
         });
     }
 
-    @Repeat(10)
+    @Repeat(100000)
     @Test
     public void test2(TestContext context) {
         Async async = context.async(1);
@@ -81,9 +88,13 @@ public class DatabaseDriverTest {
                 OrientGraphAsync result = handler.result();
                 result.command(orientGraph -> {
                     try {
+                        long l = System.nanoTime();
                         orientGraph.begin();
                         OrientVertex orientVertex = orientGraph.addVertex("class:EMPLOYEE", "name", "Sergey", "sex", "male");
                         orientGraph.commit();
+                        long l1 = System.nanoTime();
+                        long l2 = TimeUnit.NANOSECONDS.toMillis(l1 - l);
+                        System.out.println(l2);
                         return orientVertex.getId();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

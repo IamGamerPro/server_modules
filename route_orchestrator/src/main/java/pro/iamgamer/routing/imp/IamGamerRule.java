@@ -36,7 +36,12 @@ public class IamGamerRule implements RouteOrchestratorRule {
                 .put("path", "keystore.jceks")
                 .put("type", "jceks")
                 .put("password", "avt564180"));
-        OrientClient databaseClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "loginPool");
+        JsonObject dataBaseConfig = new JsonObject()
+                .put("url", "remote:localhost/test")
+                .put("login", "root")
+                .put("pwd", "avt564180")
+                .put("max_pool_size", 3);
+        OrientClient databaseClient = OrientClient.createShared(vertx, dataBaseConfig, "loginPool");
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
         JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
@@ -48,15 +53,16 @@ public class IamGamerRule implements RouteOrchestratorRule {
             JsonObject authParams = requestHandler.getBodyAsJson();
             orientDBAuthProvider.authenticate(authParams, event -> {
                 if (event.succeeded()) {
+                    String value = provider.generateToken(new JsonObject(), new JWTOptions()
+                            .setExpiresInMinutes(10080L));
                     String s = csrfHandler.generateToken();
-
                     requestHandler.response()
                             .putHeader(csrfHandler.getHeaderName(), s)
-                            .putHeader("X-JWT-TOKEN", provider.generateToken(new JsonObject(), new JWTOptions()
-                                    .setExpiresInMinutes(10080L)))
+                            .putHeader("X-JWT-TOKEN", value)
                             .end();
+                }else {
+                    requestHandler.fail(403);
                 }
-                requestHandler.fail(403);
             });
         });
     }

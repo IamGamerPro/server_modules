@@ -15,7 +15,11 @@ public class RegisterVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
-        databaseClient = OrientClient.createShared(vertx, new JsonObject().put("url", "plocal:/test"), "registerPool");
+        JsonObject dataBaseConfig = new JsonObject()
+                .put("url", "remote:localhost/test")
+                .put("login", "root")
+                .put("pwd", "avt564180");
+        databaseClient = OrientClient.createShared(vertx, dataBaseConfig, "registerPool");
         RegisterService registerService = new RegisterService(databaseClient);
         Router router = Router.router(vertx);
 
