@@ -1,6 +1,7 @@
 package client;
 
 import client.imp.OrientClientImp;
+import com.google.common.annotations.Beta;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
@@ -28,6 +29,7 @@ public interface OrientClient {
         return new OrientClientImp(vertx, config, poolName);
     }
 
+    @Beta
     OrientClient getGraph(Handler<AsyncResult<OrientGraphAsync>> handler);
 
     /**
@@ -46,7 +48,7 @@ public interface OrientClient {
      * Транзакционный доступ к докуменно
      * Блокируюший метод!
      */
-    public ODatabaseDocumentTx getDocument();
+    ODatabaseDocumentTx getDocument();
 
     void close();
 }
