@@ -24,12 +24,13 @@ public final class OrientGraphCommandAsyncDecorator<T> {
 
     private void handle(Future<T> future) {
         try {
+            orientGraph.makeActive();
             T result = function.apply(orientGraph);
             future.complete(result);
         } catch (Exception e) {
             future.fail(e);
         } finally {
-            orientGraph.shutdown();
+            orientGraph.shutdown(false);
         }
     }
 
