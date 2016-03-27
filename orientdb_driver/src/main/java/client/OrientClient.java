@@ -1,6 +1,7 @@
 package client;
 
 import client.imp.OrientClientImp;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
 import io.vertx.core.AsyncResult;
@@ -40,6 +41,12 @@ public interface OrientClient {
      * Блокируюший метод!
      */
     OrientGraphNoTx getGraphNoTx();
+
+    /**
+     * Транзакционный доступ к докуменно
+     * Блокируюший метод!
+     */
+    public ODatabaseDocumentTx getDocument();
 
     void close();
 }

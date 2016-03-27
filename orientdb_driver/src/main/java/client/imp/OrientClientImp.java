@@ -2,6 +2,7 @@ package client.imp;
 
 import client.OrientClient;
 import client.OrientGraphAsync;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphNoTx;
@@ -68,6 +69,11 @@ public class OrientClientImp implements OrientClient {
     @Override
     public OrientGraphNoTx getGraphNoTx() {
         return orientGraphFactory.getNoTx();
+    }
+
+    @Override
+    public ODatabaseDocumentTx getDocument(){
+        return orientGraphFactory.getDatabase();
     }
 
     private OrientGraphFactoryHolder lookupHolder(String poolName, JsonObject config) {
