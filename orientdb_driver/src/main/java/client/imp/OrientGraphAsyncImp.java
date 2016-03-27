@@ -33,7 +33,9 @@ public class OrientGraphAsyncImp implements OrientGraphAsync, Closeable {
     @Override
     public final OrientGraphAsync command(ParamsRequest request, Handler<AsyncResult<Void>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<Void>(vertx, orientGraph, context, (orientGraph) -> {
+            orientGraph.begin();
             orientGraph.command(request.getRequest()).execute(request.getParams());
+            orientGraph.commit();
             return null;
         }).execute(resultHandler);
         return this;
@@ -42,7 +44,9 @@ public class OrientGraphAsyncImp implements OrientGraphAsync, Closeable {
     @Override
     public OrientGraphAsync query(ParamsRequest request, Handler<AsyncResult<Stream<Vertex>>> resultHandler) {
         new OrientGraphCommandAsyncDecorator<>(vertx, orientGraph, context, orientGraph -> {
+            orientGraph.begin();
             Iterable<Vertex> result = orientGraph.command(request.getRequest()).execute(request.getParams());
+            orientGraph.commit();
             return StreamSupport.stream(result.spliterator(), false);
         }).execute(resultHandler);
         return this;
