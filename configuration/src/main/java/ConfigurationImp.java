@@ -15,6 +15,8 @@ class ConfigurationImp implements Configuration, Shareable {
 
     final Integer httpServerPort;
 
+    final JsonObject databaseConfig;
+
 
     ConfigurationImp(Vertx vertx, String filePatch) {
         Buffer buffer = vertx.fileSystem().readFileBlocking(filePatch);
@@ -23,6 +25,13 @@ class ConfigurationImp implements Configuration, Shareable {
         dbPassword = jsonObject.getString("databasePwd");
         dbUser = jsonObject.getString("databaseLogin");
         httpServerPort = jsonObject.getInteger("httpServerPort", 8080);
+        JsonObject databseConfig = new JsonObject();
+        databseConfig.put("url", dbUrl);
+        if (dbUser != null && !dbUser.isEmpty() && dbPassword != null && !dbPassword.isEmpty()) {
+            databseConfig.put("login", dbUser)
+                    .put("pwd", dbPassword);
+        }
+        this.databaseConfig = databseConfig;
     }
 
     @Override
@@ -47,6 +56,6 @@ class ConfigurationImp implements Configuration, Shareable {
 
     @Override
     public JsonObject getDatabaseConfig() {
-        return null;
+        return databaseConfig;
     }
 }
