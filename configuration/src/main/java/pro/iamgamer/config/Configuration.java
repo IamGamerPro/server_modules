@@ -1,10 +1,12 @@
+package pro.iamgamer.config;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 /**
  * Created by Sergey Kobets on 02.04.2016.
  */
-interface Configuration {
+public interface Configuration {
 
     String IAMGAMER_CONFIGURATION = "iamgamer.configuration";
 

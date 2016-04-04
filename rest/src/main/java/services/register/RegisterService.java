@@ -13,8 +13,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import services.Responses;
 
-import javax.activation.MimetypesFileTypeMap;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**

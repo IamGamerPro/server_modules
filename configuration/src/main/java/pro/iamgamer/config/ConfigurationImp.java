@@ -1,3 +1,5 @@
+package pro.iamgamer.config;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;

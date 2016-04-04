@@ -1,0 +1,8 @@
+{
+  "httpServerPort":8080,
+  "databaseUrl":"plocal:/test",
+  "databaseLogin":"",
+  "databasePwd":"",
+  "keyStorePatch":"",
+  "keyStorePwd":""
+}

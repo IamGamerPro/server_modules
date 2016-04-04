@@ -40,7 +40,7 @@ public class IamGamerRule implements RouteOrchestratorRule {
                 .put("url", "remote:localhost/test")
                 .put("login", "root")
                 .put("pwd", "avt564180")
-                .put("max_pool_size", 3);
+                .put("max_pool_size", 50);
         OrientClient databaseClient = OrientClient.createShared(vertx, dataBaseConfig, "loginPool");
         final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
         JWTAuth provider = JWTAuth.create(vertx, config);
