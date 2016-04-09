@@ -1,8 +1,8 @@
 {
   "httpServerPort":8080,
-  "databaseUrl":"plocal:/test",
-  "databaseLogin":"",
-  "databasePwd":"",
-  "keyStorePatch":"",
-  "keyStorePwd":""
+  "databaseUrl":"remote:localhost/test",
+  "databaseLogin":"root",
+  "databasePwd":"avt564180",
+  "keyStorePatch":"keystore.jceks",
+  "keyStorePwd":"avt564180"
 }

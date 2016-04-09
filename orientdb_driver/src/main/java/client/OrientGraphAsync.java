@@ -1,6 +1,7 @@
 package client;
 
 import client.imp.ParamsRequest;
+import com.google.common.annotations.Beta;
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * Created by Sergey Kobets on 20.02.2016.
  */
+@Beta
 public interface OrientGraphAsync {
     /**
      */

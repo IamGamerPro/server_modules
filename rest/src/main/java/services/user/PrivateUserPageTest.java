@@ -3,6 +3,7 @@ package services.user;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.web.Router;
+import pro.iamgamer.config.Configuration;
 import pro.iamgamer.routing.RouteOrchestrator;
 
 
@@ -14,6 +15,7 @@ public class PrivateUserPageTest extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
+        Configuration baseConfiguration = Configuration.getBaseConfiguration(vertx);
         Router router = Router.router(vertx);
         router.get().handler(requestHandler -> {
             User user = requestHandler.user();
@@ -21,6 +23,6 @@ public class PrivateUserPageTest extends AbstractVerticle {
         });
         instance.mountRequiresAuthorizationSubRouter("/user", router);
 
-        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(instance::accept).listen(baseConfiguration.getHttpServerPort());
     }
 }

@@ -17,7 +17,6 @@ import java.util.Objects;
  */
 public class RouteOrchestratorImp implements RouteOrchestrator {
     private final static String SHARED = "iamgamer.shared.Routers";
-    private final Vertx vertx;
     private final BaseRouterHolder holder;
     private final RouteOrchestratorRule routeOrchestratorRule;
     private final Router baseRouter;
@@ -27,7 +26,6 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
     }
 
     public RouteOrchestratorImp(Vertx vertx, String webroot, RouteOrchestratorRule routeOrchestratorRule) {
-        this.vertx = vertx;
         this.holder = lookupHolder(vertx, webroot);
         this.routeOrchestratorRule = routeOrchestratorRule;
         this.baseRouter = holder.router(routeOrchestratorRule);
@@ -63,7 +61,6 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                         router.route().handler(handler);
                     }
                 }
-                routeOrchestratorRule.buildAuthHandler(router, vertx);
             }
             return router;
 
@@ -86,6 +83,10 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
         return mountPublicSubRouter(routeOrchestratorRule.privateUrlPatch() + mountPoint, subRouter);
     }
 
+    @Override
+    public Router getBaseRouter() {
+        return baseRouter;
+    }
 
     @Override
     public void accept(HttpServerRequest request) {

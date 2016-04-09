@@ -19,6 +19,7 @@ public interface RouteOrchestrator {
 
     Router mountPublicSubRouter(String mountPoint, Router subRouter);
     Router mountRequiresAuthorizationSubRouter(String mountPoint, Router subRouter);
+    Router getBaseRouter();
 
     void accept(HttpServerRequest request);
 }

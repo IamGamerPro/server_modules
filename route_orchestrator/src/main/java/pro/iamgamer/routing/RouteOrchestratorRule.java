@@ -25,5 +25,5 @@ public interface RouteOrchestratorRule {
         return "/login";
     }
 
-    void buildAuthHandler(Router router, Vertx vertx);
+    //void buildAuthHandler(Router router, Vertx vertx);
 }

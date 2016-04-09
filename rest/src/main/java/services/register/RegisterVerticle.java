@@ -24,7 +24,7 @@ public class RegisterVerticle extends AbstractVerticle {
         router.get("/email-exists").blockingHandler(registerService::isUniqueEmail, false);
         router.post().blockingHandler(registerService::register, false);
         instance.mountPublicSubRouter("/register/v1/", router);
-        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(instance::accept).listen(baseConfiguration.getHttpServerPort());
     }
 
     @Override

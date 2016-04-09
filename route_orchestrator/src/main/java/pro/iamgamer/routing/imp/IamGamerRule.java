@@ -29,41 +29,4 @@ public class IamGamerRule implements RouteOrchestratorRule {
     public Set<Handler<RoutingContext>> baseHandlers() {
         return handlers;
     }
-
-    @Override
-    public void buildAuthHandler(Router router, Vertx vertx) {
-        JsonObject config = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", "keystore.jceks")
-                .put("type", "jceks")
-                .put("password", "avt564180"));
-        JsonObject dataBaseConfig = new JsonObject()
-                .put("url", "remote:localhost/test")
-                .put("login", "root")
-                .put("pwd", "avt564180")
-                .put("max_pool_size", 50);
-        OrientClient databaseClient = OrientClient.createShared(vertx, dataBaseConfig, "loginPool");
-        final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
-        JWTAuth provider = JWTAuth.create(vertx, config);
-        JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
-        String privatePaths = this.privateUrlPatch() + "/*";
-        router.route(privatePaths).handler(jwtAuthHandler);
-        PersistCSRFHandler csrfHandler = PersistCSRFHandler.create("qwerty1234");
-        router.route(privatePaths).handler(csrfHandler);
-        router.post("/login").handler(requestHandler -> {
-            JsonObject authParams = requestHandler.getBodyAsJson();
-            orientDBAuthProvider.authenticate(authParams, event -> {
-                if (event.succeeded()) {
-                    String value = provider.generateToken(new JsonObject(), new JWTOptions()
-                            .setExpiresInMinutes(10080L));
-                    String s = csrfHandler.generateToken();
-                    requestHandler.response()
-                            .putHeader(csrfHandler.getHeaderName(), s)
-                            .putHeader("X-JWT-TOKEN", value)
-                            .end();
-                }else {
-                    requestHandler.fail(403);
-                }
-            });
-        });
-    }
 }
