@@ -1,15 +1,15 @@
 package services.login;
 
-import auth.OrientDBAuthProvider;
-import client.OrientClient;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.JWTAuthHandler;
+import pro.iamgamer.auth.mongo.MongoAuth;
 import pro.iamgamer.config.Configuration;
 import pro.iamgamer.routing.RouteOrchestrator;
 import pro.iamgamer.routing.csrf.PersistCSRFHandler;
@@ -30,16 +30,14 @@ public class LoginVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        JsonObject config = new JsonObject().put("keyStore", new JsonObject()
-                .put("path", "keystore.jceks")
-                .put("type", "jceks")
-                .put("password", "avt564180"));
-        JsonObject databaseConfig = configuration.getDatabaseConfig()
-                .put("max_pool_size", 50);
+        JsonObject config = context.config();
+        JsonObject keyStoreConfig = config.getJsonObject("keyStoreConfig");
+        JsonObject databaseConfig = config.getJsonObject("databaseConfig");
+        JsonObject mongoDbAuthConfig = config.getJsonObject("mongoDbAuthConfig");
         IamGamerRule iamGamerRule = new IamGamerRule();
-        OrientClient databaseClient = OrientClient.createShared(vertx, databaseConfig, "loginPool");
-        final OrientDBAuthProvider orientDBAuthProvider = OrientDBAuthProvider.create(databaseClient);
-        JWTAuth provider = JWTAuth.create(vertx, config);
+        MongoClient shared = MongoClient.createShared(vertx, databaseConfig);
+        MongoAuth mongoAuth = MongoAuth.create(shared, mongoDbAuthConfig);
+        JWTAuth provider = JWTAuth.create(vertx, keyStoreConfig);
         JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
         String privatePaths = iamGamerRule.privateUrlPatch() + "/*";
         Router router = routeOrchestrator.getBaseRouter();
@@ -48,7 +46,7 @@ public class LoginVerticle extends AbstractVerticle {
         router.route(privatePaths).handler(csrfHandler);
         router.post(iamGamerRule.loginUrl()).handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
-            orientDBAuthProvider.authenticate(authParams, event -> {
+            mongoAuth.authenticate(authParams, event -> {
                 if (event.succeeded()) {
                     String value = provider.generateToken(new JsonObject(), new JWTOptions()
                             .setExpiresInMinutes(10080L));
