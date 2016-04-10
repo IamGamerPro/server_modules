@@ -1,8 +1,24 @@
 {
-  "httpServerPort":8080,
-  "databaseUrl":"remote:localhost/test",
-  "databaseLogin":"root",
-  "databasePwd":"avt564180",
-  "keyStorePatch":"keystore.jceks",
-  "keyStorePwd":"avt564180"
+  "httServerConfig": {
+    "port": 8080
+  },
+  "databaseConfig": {
+    "connection_string": "mongodb://localhost:27017",
+    "db_name": "iamgamer",
+    "useObjectId": true
+  },
+  "keyStoreConfig": {
+    "keyStore": {
+      "path": "keystore.jceks",
+      "type": "jceks",
+      "password": "avt564180"
+    }
+  },
+  "mongoDbAuthConfig":{
+    "collectionName": "users",
+    "usernameField": "login",
+    "passwordField": "password",
+    "saltField": "salt",
+    "saltStyle": "COLUMN"
+  }
 }
