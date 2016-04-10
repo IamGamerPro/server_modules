@@ -19,36 +19,36 @@ import pro.iamgamer.routing.imp.IamGamerRule;
  */
 public class LoginVerticle extends AbstractVerticle {
     private RouteOrchestrator routeOrchestrator;
+    private JsonObject keyStoreConfig;
+    private JsonObject databaseConfig;
+    private JsonObject mongoDbAuthConfig;
+    private IamGamerRule iamGamerRule;
+    private MongoAuth mongoAuth;
+    private JWTAuth jwtAuth;
+    private JWTAuthHandler jwtAuthHandler;
+    private String privateUrls;
+    private String loginUrl;
+    private PersistCSRFHandler csrfHandler;
+    private Integer port;
 
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
         routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
+        loadConfiguration(context.config());
     }
 
     @Override
     public void start() throws Exception {
-        JsonObject config = context.config();
-        JsonObject keyStoreConfig = config.getJsonObject("keyStoreConfig");
-        JsonObject databaseConfig = config.getJsonObject("databaseConfig");
-        JsonObject mongoDbAuthConfig = config.getJsonObject("mongoDbAuthConfig");
-        IamGamerRule iamGamerRule = new IamGamerRule();
-        MongoClient shared = MongoClient.createShared(vertx, databaseConfig);
-        MongoAuth mongoAuth = MongoAuth.create(shared, mongoDbAuthConfig);
-        mongoAuth.setUsernameCredentialField(mongoAuth.getUsernameField());
-        mongoAuth.setPasswordCredentialField(mongoAuth.getPasswordField());
-        JWTAuth provider = JWTAuth.create(vertx, keyStoreConfig);
-        JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
-        String privatePaths = iamGamerRule.privateUrlPatch() + "/*";
+        serviceInitialization();
         Router router = routeOrchestrator.getBaseRouter();
-        router.route(privatePaths).handler(jwtAuthHandler);
-        PersistCSRFHandler csrfHandler = PersistCSRFHandler.create("qwerty1234");
-        router.route(privatePaths).handler(csrfHandler);
-        router.post(iamGamerRule.loginUrl()).handler(requestHandler -> {
+        router.route(privateUrls).handler(jwtAuthHandler);
+        router.route(privateUrls).handler(csrfHandler);
+        router.post(loginUrl).handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
             mongoAuth.authenticate(authParams, event -> {
                 if (event.succeeded()) {
-                    String value = provider.generateToken(new JsonObject(), new JWTOptions()
+                    String value = jwtAuth.generateToken(new JsonObject(), new JWTOptions()
                             .setExpiresInMinutes(10080L));
                     String s = csrfHandler.generateToken();
                     requestHandler.response()
@@ -60,6 +60,26 @@ public class LoginVerticle extends AbstractVerticle {
                 }
             });
         });
-        vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
+    }
+
+    private void serviceInitialization() {
+        MongoClient shared = MongoClient.createShared(vertx, databaseConfig);
+        mongoAuth = MongoAuth.create(shared, mongoDbAuthConfig);
+        mongoAuth.setUsernameCredentialField(mongoAuth.getUsernameField());
+        mongoAuth.setPasswordCredentialField(mongoAuth.getPasswordField());
+        jwtAuth = JWTAuth.create(vertx, keyStoreConfig);
+        jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
+        csrfHandler = PersistCSRFHandler.create("qwerty1234");
+    }
+
+    private void loadConfiguration(JsonObject config) {
+        keyStoreConfig = config.getJsonObject("keyStoreConfig");
+        databaseConfig = config.getJsonObject("databaseConfig");
+        mongoDbAuthConfig = config.getJsonObject("mongoDbAuthConfig");
+        port = config.getJsonObject("httServerConfig").getInteger("port");
+        iamGamerRule = new IamGamerRule();
+        privateUrls = iamGamerRule.privateUrlPatch() + "/*";
+        loginUrl = iamGamerRule.loginUrl();
     }
 }
