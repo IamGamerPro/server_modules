@@ -2,9 +2,6 @@ package services.register;
 
 import client.OrientClient;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.ext.web.Router;
-import pro.iamgamer.config.Configuration;
-import pro.iamgamer.routing.RouteOrchestrator;
 
 
 /**

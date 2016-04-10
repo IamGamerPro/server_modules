@@ -1,11 +1,9 @@
 package pro.iamgamer;
 
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.DeploymentOptionsConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-import pro.iamgamer.config.Configuration;
 import services.login.LoginVerticle;
 import services.register.RegisterVerticle;
 import services.user.PrivateUserPageTest;

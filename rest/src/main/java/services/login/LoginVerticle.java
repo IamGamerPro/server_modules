@@ -10,7 +10,6 @@ import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.JWTAuthHandler;
 import pro.iamgamer.auth.mongo.MongoAuth;
-import pro.iamgamer.config.Configuration;
 import pro.iamgamer.routing.RouteOrchestrator;
 import pro.iamgamer.routing.csrf.PersistCSRFHandler;
 import pro.iamgamer.routing.imp.IamGamerRule;
@@ -19,12 +18,11 @@ import pro.iamgamer.routing.imp.IamGamerRule;
  * Created by Sergey Kobets on 09.04.2016.
  */
 public class LoginVerticle extends AbstractVerticle {
-    private Configuration configuration;
     private RouteOrchestrator routeOrchestrator;
+
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        configuration = Configuration.getBaseConfiguration(vertx);
         routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
     }
 
@@ -60,6 +58,6 @@ public class LoginVerticle extends AbstractVerticle {
                 }
             });
         });
-        vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(configuration.getHttpServerPort());
+        vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(8080);
     }
 }
