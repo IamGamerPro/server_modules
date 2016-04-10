@@ -24,6 +24,4 @@ public interface RouteOrchestratorRule {
     default String loginUrl() {
         return "/login";
     }
-
-    //void buildAuthHandler(Router router, Vertx vertx);
 }
