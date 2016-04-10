@@ -1,6 +1,6 @@
-package auth;
+package auth.orient;
 
-import auth.imp.OrientDBAuthProviderImp;
+import auth.orient.imp.OrientDBAuthProviderImp;
 import client.OrientClient;
 import io.vertx.ext.auth.AuthProvider;
 

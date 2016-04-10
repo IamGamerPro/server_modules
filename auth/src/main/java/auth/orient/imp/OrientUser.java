@@ -1,4 +1,4 @@
-package auth.imp;
+package auth.orient.imp;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;

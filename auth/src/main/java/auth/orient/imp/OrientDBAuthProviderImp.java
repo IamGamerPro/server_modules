@@ -1,7 +1,6 @@
-package auth.imp;
+package auth.orient.imp;
 
-import auth.OrientDBAuthProvider;
-import auth.imp.security.PasswordUtils;
+import auth.orient.OrientDBAuthProvider;
 import client.OrientClient;
 import client.OrientGraphAsync;
 import client.imp.ParamsRequest;
@@ -12,6 +11,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
+import pro.iamgamer.core.security.PasswordUtils;
 
 import java.util.Arrays;
 import java.util.Optional;

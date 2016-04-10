@@ -1,5 +1,5 @@
-import auth.OrientDBAuthProvider;
-import auth.imp.security.PasswordUtils;
+import auth.orient.OrientDBAuthProvider;
+import auth.orient.imp.security.PasswordUtils;
 import client.OrientClient;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
