@@ -4,8 +4,9 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
+
 import services.login.LoginVerticle;
-import services.register.RegisterVerticle;
+import services.register.v2.RegisterVerticle;
 import services.user.PrivateUserPageTest;
 
 import java.time.LocalTime;
@@ -26,7 +27,7 @@ public class Starter {
         System.out.println(LocalTime.now() + " server started successfully");
     }
 
-    static DeploymentOptions readConfiguration(){
+    static DeploymentOptions readConfiguration() {
         Buffer buffer = vertx.fileSystem().readFileBlocking("config.json");
         JsonObject jsonObject = buffer.toJsonObject();
         return new DeploymentOptions().setConfig(jsonObject);

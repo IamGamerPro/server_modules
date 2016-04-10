@@ -35,6 +35,8 @@ public class LoginVerticle extends AbstractVerticle {
         IamGamerRule iamGamerRule = new IamGamerRule();
         MongoClient shared = MongoClient.createShared(vertx, databaseConfig);
         MongoAuth mongoAuth = MongoAuth.create(shared, mongoDbAuthConfig);
+        mongoAuth.setUsernameCredentialField(mongoAuth.getUsernameField());
+        mongoAuth.setPasswordCredentialField(mongoAuth.getPasswordField());
         JWTAuth provider = JWTAuth.create(vertx, keyStoreConfig);
         JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(provider);
         String privatePaths = iamGamerRule.privateUrlPatch() + "/*";

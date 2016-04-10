@@ -55,12 +55,12 @@ public class RegisterVerticle extends AbstractVerticle {
                     }
             );
             routingContext.next();
-        }, false);
+        }, true);
         router.post().handler(handler -> handler.response().setStatusCode(200).end());
 
         instance.mountPublicSubRouter("/register/v2/", router);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
     }
 
     private class UserCreateRequest {
@@ -68,7 +68,7 @@ public class RegisterVerticle extends AbstractVerticle {
         private final String password;
         private final String email;
 
-        public UserCreateRequest(JsonObject registerRequest) {
+        UserCreateRequest(JsonObject registerRequest) {
             this.login = registerRequest.getString("login");
             this.password = registerRequest.getString("password");
             this.email = registerRequest.getString("email");
