@@ -21,9 +21,9 @@ public class Starter {
 
     public static void main(String[] args) {
         DeploymentOptions deploymentOptions = readConfiguration();
-        vertx.deployVerticle(new RegisterVerticle(), deploymentOptions);
-        vertx.deployVerticle(new LoginVerticle(), deploymentOptions);
-        vertx.deployVerticle(new PrivateUserPageTest(), deploymentOptions);
+        vertx.deployVerticle(RegisterVerticle.class.getCanonicalName(), deploymentOptions);
+        vertx.deployVerticle(LoginVerticle.class.getCanonicalName(), new DeploymentOptions(deploymentOptions).setInstances(10));
+        vertx.deployVerticle(PrivateUserPageTest.class.getCanonicalName(), deploymentOptions);
         System.out.println(LocalTime.now() + " server started successfully");
     }
 
