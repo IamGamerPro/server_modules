@@ -68,7 +68,11 @@ public class RegisterVerticle extends AbstractVerticle {
         });
         instance.mountPublicSubRouter("/register/v1/", router);
         vertx.createHttpServer().requestHandler(instance::accept).listen(port);
+    }
 
+    @Override
+    public void stop() throws Exception {
+        shared.close();
     }
 }
 
