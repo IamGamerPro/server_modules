@@ -1,11 +1,11 @@
-package mongo;
+package pro.iamgamer.auth.mongo;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.mongo.MongoClient;
-import mongo.impl.MongoAuthImpl;
+import pro.iamgamer.auth.mongo.imp.MongoAuthImpl;
 
 import java.util.List;
 

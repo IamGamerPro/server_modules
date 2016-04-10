@@ -1,4 +1,4 @@
-package mongo.impl;
+package pro.iamgamer.auth.mongo.imp;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -7,7 +7,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AbstractUser;
 import io.vertx.ext.auth.AuthProvider;
-import mongo.MongoAuth;
+import pro.iamgamer.auth.mongo.MongoAuth;
 
 public class MongoUser extends AbstractUser {
     private JsonObject principal;

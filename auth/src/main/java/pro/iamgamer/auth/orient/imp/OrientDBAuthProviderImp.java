@@ -1,6 +1,6 @@
-package auth.orient.imp;
+package pro.iamgamer.auth.orient.imp;
 
-import auth.orient.OrientDBAuthProvider;
+import pro.iamgamer.auth.orient.OrientDBAuthProvider;
 import client.OrientClient;
 import client.OrientGraphAsync;
 import client.imp.ParamsRequest;

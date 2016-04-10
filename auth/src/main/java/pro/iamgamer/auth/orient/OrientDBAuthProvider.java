@@ -1,6 +1,6 @@
-package auth.orient;
+package pro.iamgamer.auth.orient;
 
-import auth.orient.imp.OrientDBAuthProviderImp;
+import pro.iamgamer.auth.orient.imp.OrientDBAuthProviderImp;
 import client.OrientClient;
 import io.vertx.ext.auth.AuthProvider;
 

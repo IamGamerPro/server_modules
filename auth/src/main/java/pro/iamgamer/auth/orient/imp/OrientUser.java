@@ -1,4 +1,4 @@
-package auth.orient.imp;
+package pro.iamgamer.auth.orient.imp;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;

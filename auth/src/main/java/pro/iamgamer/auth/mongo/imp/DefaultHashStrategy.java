@@ -1,9 +1,9 @@
-package mongo.impl;
+package pro.iamgamer.auth.mongo.imp;
 
 import io.vertx.core.VertxException;
 import io.vertx.ext.auth.User;
-import mongo.HashSaltStyle;
-import mongo.HashStrategy;
+import pro.iamgamer.auth.mongo.HashSaltStyle;
+import pro.iamgamer.auth.mongo.HashStrategy;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

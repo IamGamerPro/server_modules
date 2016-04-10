@@ -1,4 +1,4 @@
-package mongo;
+package pro.iamgamer.auth.mongo;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;

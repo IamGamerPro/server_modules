@@ -1,4 +1,4 @@
-package mongo.impl;
+package pro.iamgamer.auth.mongo.imp;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -9,10 +9,10 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.mongo.MongoClient;
-import mongo.AuthenticationException;
-import mongo.HashSaltStyle;
-import mongo.HashStrategy;
-import mongo.MongoAuth;
+import pro.iamgamer.auth.mongo.AuthenticationException;
+import pro.iamgamer.auth.mongo.HashSaltStyle;
+import pro.iamgamer.auth.mongo.HashStrategy;
+import pro.iamgamer.auth.mongo.MongoAuth;
 
 import java.util.List;
 

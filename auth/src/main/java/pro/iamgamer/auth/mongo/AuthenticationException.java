@@ -1,4 +1,4 @@
-package mongo;
+package pro.iamgamer.auth.mongo;
 
 public class AuthenticationException extends RuntimeException {
 

@@ -3,8 +3,9 @@ version '0.0.2'
 
 dependencies {
     compile project(":orientdb_driver")
+    compile project(":core")
+    compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.2.1'
     compile 'io.vertx:vertx-auth-common:3.2.1'
     compile 'org.apache.commons:commons-lang3:3.4'
-    compile "co.paralleluniverse:quasar-core:0.7.4:jdk8"
     testCompile 'io.vertx:vertx-unit:3.2.1'
 }
