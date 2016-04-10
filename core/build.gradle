@@ -3,5 +3,4 @@ version '0.0.2'
 
 dependencies {
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.2.1.Final'
-    compile group: 'io.vertx', name: 'vertx-auth-mongo', version: '3.2.1'
 }
