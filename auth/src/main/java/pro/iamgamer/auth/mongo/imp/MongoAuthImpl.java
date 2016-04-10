@@ -12,6 +12,7 @@ import pro.iamgamer.auth.mongo.AuthenticationException;
 import pro.iamgamer.auth.mongo.HashStrategy;
 import pro.iamgamer.auth.mongo.MongoAuth;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MongoAuthImpl implements MongoAuth {
@@ -105,9 +106,9 @@ public class MongoAuthImpl implements MongoAuth {
     }
 
     private boolean examinePassword(User user, AuthToken authToken) {
-        String storedPassword = getHashStrategy().getStoredPwd(user);
-        String givenPassword = getHashStrategy().computeHash(authToken.password, user);
-        return storedPassword != null && storedPassword.equals(givenPassword);
+        byte[] storedPassword = getHashStrategy().getStoredPwd(user);
+        byte[] givenPassword = getHashStrategy().computeHash(authToken.password, user);
+        return storedPassword != null && Arrays.equals(storedPassword, givenPassword);
     }
 
     private void init() {

@@ -4,9 +4,9 @@ import io.vertx.ext.auth.User;
 
 public interface HashStrategy {
 
-    String computeHash(String password, User user);
+    byte[] computeHash(String password, User user);
 
-    String getStoredPwd(User user);
+    byte[] getStoredPwd(User user);
 
-    String getSalt(User user);
+    byte[] getSalt(User user);
 }

@@ -1,12 +1,8 @@
 package pro.iamgamer.auth.mongo.imp;
 
-import io.vertx.core.VertxException;
 import io.vertx.ext.auth.User;
 import pro.iamgamer.auth.mongo.HashStrategy;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import pro.iamgamer.core.security.PasswordUtils;
 
 public class DefaultHashStrategy implements HashStrategy {
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
@@ -15,30 +11,19 @@ public class DefaultHashStrategy implements HashStrategy {
     }
 
     @Override
-    public String computeHash(String password, User user) {
-        String salt = getSalt(user);
-        return computeHash(password, salt, "SHA-512");
+    public byte[] computeHash(String password, User user) {
+        byte[] salt = getSalt(user);
+        return PasswordUtils.hash(password.toCharArray(), salt);
     }
 
     @Override
-    public String getStoredPwd(User user) {
+    public byte[] getStoredPwd(User user) {
         return ((MongoUser) user).getPassword();
     }
 
     @Override
-    public String getSalt(User user) {
+    public byte[] getSalt(User user) {
         return ((MongoUser) user).getSalt();
-    }
-
-    private String computeHash(String password, String salt, String algo) {
-        try {
-            MessageDigest md = MessageDigest.getInstance(algo);
-            String concat = (salt == null ? "" : salt) + password;
-            byte[] bHash = md.digest(concat.getBytes(StandardCharsets.UTF_8));
-            return bytesToHex(bHash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new VertxException(e);
-        }
     }
 
     private static String bytesToHex(byte[] bytes) {

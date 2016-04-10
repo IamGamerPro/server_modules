@@ -55,12 +55,12 @@ public class MongoUser extends AbstractUser {
         }
     }
 
-    public String getSalt() {
-        return principal.getString(mongoAuth.getSaltField());
+    public byte[] getSalt() {
+        return principal.getJsonObject(mongoAuth.getSaltField()).getBinary("$binary");
     }
 
-    public String getPassword() {
-        return principal.getString(mongoAuth.getPasswordField());
+    public byte[] getPassword() {
+        return principal.getJsonObject(mongoAuth.getPasswordField()).getBinary("$binary");
     }
 
     protected void doHasPermission(String permission, Handler<AsyncResult<Boolean>> resultHandler) {
