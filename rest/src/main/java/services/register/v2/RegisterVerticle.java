@@ -1,12 +1,12 @@
 package services.register.v2;
 
-import auth.imp.security.PasswordUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.bson.types.ObjectId;
+import pro.iamgamer.core.security.PasswordUtils;
 import pro.iamgamer.routing.RouteOrchestrator;
 
 /**
