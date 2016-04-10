@@ -1,3 +1,5 @@
+package pro.iamgamer;
+
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.DeploymentOptionsConverter;
 import io.vertx.core.Vertx;
