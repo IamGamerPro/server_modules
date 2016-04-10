@@ -1,27 +1,12 @@
 package services.register;
 
-import auth.imp.security.PasswordUtils;
-import client.OrientClient;
-import client.OrientGraphAsync;
-import client.imp.ParamsRequest;
-import com.google.common.net.MediaType;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientVertex;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RoutingContext;
-import services.Responses;
-
-import java.util.stream.Stream;
-
 /**
  * Created by Sergey Kobets on 27.02.2016.
  */
 public class RegisterService {
-    private static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
+    /*private static final OCommandSQL SELECT_BY_LOGIN = new OCommandSQL("select 1 from User where login = ?");
     private static final OCommandSQL SELECT_BY_EMAIL = new OCommandSQL("select 1 from User where email = ?");
-    /*private static final Pattern validPassword = Pattern.compile("(?=^.{6,18}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");*/
+    *//*private static final Pattern validPassword = Pattern.compile("(?=^.{6,18}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");*//*
     private static final String MANDATORY_REGISTER_PARAM = Responses.errorMessage("Поля: имя пользователя, пароль и email обязательны для заполнения");
     private static final String WEAK_PASSWORD = Responses.errorMessage("Пароль должен иметь длинну не менее 8 символов, состоять из латинских букв верхнего и нижнего регистра, и содержать цифры");
 
@@ -50,7 +35,7 @@ public class RegisterService {
             routingContext.response().setStatusCode(400).putHeader("content-type", MediaType.JSON_UTF_8.toString()).end(MANDATORY_REGISTER_PARAM);
             return;
         }
-        if (/*!validPassword.matcher(password).matches()*/false) {
+        if (*//*!validPassword.matcher(password).matches()*//*false) {
             routingContext.response().setStatusCode(400).putHeader("content-type", MediaType.JSON_UTF_8.toString()).end(WEAK_PASSWORD);
             return;
         }
@@ -101,6 +86,6 @@ public class RegisterService {
             }
         });
     }
-
+*/
 
 }

@@ -14,14 +14,14 @@ import pro.iamgamer.routing.RouteOrchestrator;
  * Experimental MongoDB Register
  */
 public class RegisterVerticle extends AbstractVerticle {
-
+    private MongoClient shared;
     @Override
     public void start() throws Exception {
         JsonObject config = new JsonObject()
                 .put("connection_string", "mongodb://localhost:27017")
                 .put("db_name", "iamgamer")
                 .put("useObjectId", true);
-        MongoClient shared = MongoClient.createShared(vertx, config);
+        shared = MongoClient.createShared(vertx, config);
 
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
 
@@ -73,5 +73,10 @@ public class RegisterVerticle extends AbstractVerticle {
             this.password = registerRequest.getString("password");
             this.email = registerRequest.getString("email");
         }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        shared.close();
     }
 }

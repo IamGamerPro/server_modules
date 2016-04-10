@@ -1,6 +1,0 @@
-group 'pro.iamgamer'
-version '0.0.2'
-
-dependencies {
-    compile group: 'io.vertx', name: 'vertx-core', version: '3.2.1'
-}

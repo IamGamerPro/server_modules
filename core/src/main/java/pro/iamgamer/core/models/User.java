@@ -1,7 +1,5 @@
 package pro.iamgamer.core.models;
 
-import com.orientechnologies.orient.core.id.ORID;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -14,20 +12,29 @@ import java.util.Optional;
  */
 public final class User implements Entity {
     /**Системный идентификатор сущности */
-    private ORID id;
-    /**Версия схема */
+    /*private ORID id;*/
+    /**
+     * Версия схема
+     */
     private final Integer shemaVersion = null;
-    /**Дата посдедней модификации коллекции*/
+    /**
+     * Дата посдедней модификации коллекции
+     */
     private Date modDate;
-    /**Числовой индекс версии коллекции (после каждого редактирования увеличивается на 1)*/
+    /**
+     * Числовой индекс версии коллекции (после каждого редактирования увеличивается на 1)
+     */
     private Integer modVersion;
-    /**Статус удаления аккаунта*/
+    /**
+     * Статус удаления аккаунта
+     */
     private Boolean delete = Boolean.FALSE;
-    /**Дата удаления аккаунта*/
+    /**
+     * Дата удаления аккаунта
+     */
     private Optional<Date> deleteDate;
     private Boolean ban = Boolean.FALSE;
     private Date banExpiredDate;
-
 
 
     @NotNull
@@ -40,7 +47,7 @@ public final class User implements Entity {
 
     @Override
     public String toString() {
-        String sb = "User{" + "id=" + id +
+        String sb = "User{" + "id=" + /*id +*/
                 ", shemaVersion=" + shemaVersion +
                 ", modDate=" + modDate +
                 ", modVersion=" + modVersion +
@@ -52,19 +59,18 @@ public final class User implements Entity {
     }
 
 
-
     public String getLogin() {
         return login;
     }
 
-    public ORID getId() {
-        return id;
-    }
+    /*  public ORID getId() {
+          return id;
+      }
 
-    public void setId(ORID id) {
-        this.id = id;
-    }
-
+      public void setId(ORID id) {
+          this.id = id;
+      }
+  */
     public Integer getShemaVersion() {
         return shemaVersion;
     }

@@ -4,7 +4,6 @@ include 'rest'
 include 'orientdb_driver'
 include 'auth'
 include 'route_orchestrator'
-include 'configuration'
 
 
 

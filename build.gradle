@@ -12,7 +12,6 @@ dependencies {
     compile project(":orientdb_driver")
     compile project(":auth")
     compile project(":route_orchestrator")
-    compile project(":configuration")
 }
 
 allprojects {
