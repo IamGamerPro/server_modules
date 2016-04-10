@@ -3,7 +3,7 @@ version '0.0.2'
 apply plugin: 'application'
 apply plugin: 'idea'
 
-mainClassName = 'Starter'
+mainClassName = 'pro.iamgamer.Starter'
 applicationDefaultJvmArgs = ["-Xmx2g", "-Xms1g"]
 
 dependencies {
