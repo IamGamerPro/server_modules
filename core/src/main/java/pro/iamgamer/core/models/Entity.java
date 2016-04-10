@@ -1,4 +1,4 @@
-package pro.iamgamer.core.model;
+package pro.iamgamer.core.models;
 
 import java.io.Serializable;
 

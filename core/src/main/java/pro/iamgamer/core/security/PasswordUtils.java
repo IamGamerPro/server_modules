@@ -1,4 +1,4 @@
-package auth.imp.security;
+package pro.iamgamer.core.security;
 
 import org.apache.commons.lang3.RandomStringUtils;
 

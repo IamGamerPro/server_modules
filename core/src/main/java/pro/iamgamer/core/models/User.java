@@ -1,4 +1,4 @@
-package pro.iamgamer.core.model;
+package pro.iamgamer.core.models;
 
 import com.orientechnologies.orient.core.id.ORID;
 
