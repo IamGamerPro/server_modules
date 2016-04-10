@@ -9,11 +9,4 @@ public interface HashStrategy {
     String getStoredPwd(User user);
 
     String getSalt(User user);
-
-    void setExternalSalt(String salt);
-
-    void setSaltStyle(HashSaltStyle saltStyle);
-
-    HashSaltStyle getSaltStyle();
-
 }

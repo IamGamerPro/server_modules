@@ -1,13 +1,9 @@
 package pro.iamgamer.auth.mongo;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.mongo.MongoClient;
 import pro.iamgamer.auth.mongo.imp.MongoAuthImpl;
-
-import java.util.List;
 
 
 public interface MongoAuth extends AuthProvider {
@@ -20,8 +16,6 @@ public interface MongoAuth extends AuthProvider {
     String PROPERTY_CREDENTIAL_USERNAME_FIELD = "usernameCredentialField";
     String PROPERTY_CREDENTIAL_PASSWORD_FIELD = "passwordCredentialField";
     String PROPERTY_SALT_FIELD = "saltField";
-    String PROPERTY_SALT_STYLE = "saltStyle";
-
     String DEFAULT_COLLECTION_NAME = "user";
     String DEFAULT_USERNAME_FIELD = "username";
     String DEFAULT_PASSWORD_FIELD = "password";
@@ -74,8 +68,5 @@ public interface MongoAuth extends AuthProvider {
     MongoAuth setHashStrategy(HashStrategy hashStrategy);
 
     HashStrategy getHashStrategy();
-
-    void insertUser(String username, String password, List<String> roles, List<String> permissions,
-                    Handler<AsyncResult<String>> resultHandler);
 
 }

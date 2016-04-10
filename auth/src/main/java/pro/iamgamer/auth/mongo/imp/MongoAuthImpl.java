@@ -3,14 +3,12 @@ package pro.iamgamer.auth.mongo.imp;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.mongo.MongoClient;
 import pro.iamgamer.auth.mongo.AuthenticationException;
-import pro.iamgamer.auth.mongo.HashSaltStyle;
 import pro.iamgamer.auth.mongo.HashStrategy;
 import pro.iamgamer.auth.mongo.MongoAuth;
 
@@ -106,31 +104,6 @@ public class MongoAuthImpl implements MongoAuth {
         }
     }
 
-    @Override
-    public void insertUser(String username, String password, List<String> roles, List<String> permissions,
-                           Handler<AsyncResult<String>> resultHandler) {
-        JsonObject principal = new JsonObject();
-        principal.put(getUsernameField(), username);
-
-        if (roles != null) {
-            principal.put(MongoAuth.DEFAULT_ROLE_FIELD, new JsonArray(roles));
-        }
-
-        if (permissions != null) {
-            principal.put(MongoAuth.DEFAULT_PERMISSION_FIELD, new JsonArray(permissions));
-        }
-        MongoUser user = new MongoUser(principal, this);
-
-        if (getHashStrategy().getSaltStyle() == HashSaltStyle.COLUMN) {
-            principal.put(getSaltField(), DefaultHashStrategy.generateSalt());
-        }
-
-        String cryptPassword = getHashStrategy().computeHash(password, user);
-        principal.put(getPasswordField(), cryptPassword);
-
-        mongoClient.save(getCollectionName(), user.principal(), resultHandler);
-    }
-
     private boolean examinePassword(User user, AuthToken authToken) {
         String storedPassword = getHashStrategy().getStoredPwd(user);
         String givenPassword = getHashStrategy().computeHash(authToken.password, user);
@@ -178,12 +151,6 @@ public class MongoAuthImpl implements MongoAuth {
         if (saltField != null) {
             setSaltField(saltField);
         }
-
-        String saltstyle = config.getString(PROPERTY_SALT_STYLE);
-        if (saltstyle != null) {
-            getHashStrategy().setSaltStyle(HashSaltStyle.valueOf(saltstyle));
-        }
-
     }
 
     @Override

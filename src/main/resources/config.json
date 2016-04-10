@@ -18,7 +18,6 @@
     "collectionName": "users",
     "usernameField": "login",
     "passwordField": "password",
-    "saltField": "salt",
-    "saltStyle": "COLUMN"
+    "saltField": "salt"
   }
 }

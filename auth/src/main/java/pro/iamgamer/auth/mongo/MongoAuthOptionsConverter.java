@@ -26,9 +26,7 @@ public class MongoAuthOptionsConverter {
         if (json.getValue("saltField") instanceof String) {
             obj.setSaltField((String) json.getValue("saltField"));
         }
-        if (json.getValue("saltStyle") instanceof String) {
-            obj.setSaltStyle(HashSaltStyle.valueOf((String) json.getValue("saltStyle")));
-        }
+
         if (json.getValue("shared") instanceof Boolean) {
             obj.setShared((Boolean) json.getValue("shared"));
         }
@@ -61,9 +59,6 @@ public class MongoAuthOptionsConverter {
         }
         if (obj.getSaltField() != null) {
             json.put("saltField", obj.getSaltField());
-        }
-        if (obj.getSaltStyle() != null) {
-            json.put("saltStyle", obj.getSaltStyle().name());
         }
         json.put("shared", obj.getShared());
         if (obj.getUsernameCredentialField() != null) {

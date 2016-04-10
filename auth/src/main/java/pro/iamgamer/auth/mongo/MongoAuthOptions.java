@@ -14,7 +14,6 @@ public class MongoAuthOptions implements io.vertx.ext.auth.AuthOptions {
     private String permissionField;
     private String usernameCredentialField;
     private String saltField;
-    private HashSaltStyle saltStyle;
     private JsonObject config;
 
     public MongoAuthOptions() {
@@ -27,7 +26,6 @@ public class MongoAuthOptions implements io.vertx.ext.auth.AuthOptions {
         permissionField = MongoAuth.DEFAULT_PERMISSION_FIELD;
         usernameCredentialField = MongoAuth.DEFAULT_CREDENTIAL_USERNAME_FIELD;
         saltField = MongoAuth.DEFAULT_SALT_FIELD;
-        saltStyle = null;
     }
 
     public MongoAuthOptions(MongoAuthOptions that) {
@@ -41,7 +39,6 @@ public class MongoAuthOptions implements io.vertx.ext.auth.AuthOptions {
         permissionField = that.permissionField;
         usernameCredentialField = that.usernameCredentialField;
         saltField = that.saltField;
-        saltStyle = that.saltStyle;
         config = that.config != null ? that.config.copy() : null;
     }
 
@@ -161,16 +158,6 @@ public class MongoAuthOptions implements io.vertx.ext.auth.AuthOptions {
 
     public MongoAuthOptions setSaltField(String saltField) {
         this.saltField = saltField;
-        return this;
-    }
-
-    public HashSaltStyle getSaltStyle() {
-        return saltStyle;
-    }
-
-
-    public MongoAuthOptions setSaltStyle(HashSaltStyle saltStyle) {
-        this.saltStyle = saltStyle;
         return this;
     }
 }
