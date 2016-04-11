@@ -30,6 +30,7 @@ public class LoginVerticle extends AbstractVerticle {
     private String loginUrl;
     private PersistCSRFHandler csrfHandler;
     private Integer port;
+    private MongoClient shared;
 
     @Override
     public void init(Vertx vertx, Context context) {
@@ -64,7 +65,7 @@ public class LoginVerticle extends AbstractVerticle {
     }
 
     private void serviceInitialization() {
-        MongoClient shared = MongoClient.createShared(vertx, databaseConfig);
+        shared = MongoClient.createShared(vertx, databaseConfig);
         mongoAuth = MongoAuth.create(shared, mongoDbAuthConfig);
         mongoAuth.setUsernameCredentialField(mongoAuth.getUsernameField());
         mongoAuth.setPasswordCredentialField(mongoAuth.getPasswordField());
@@ -81,5 +82,10 @@ public class LoginVerticle extends AbstractVerticle {
         iamGamerRule = new IamGamerRule();
         privateUrls = iamGamerRule.privateUrlPatch() + "/*";
         loginUrl = iamGamerRule.loginUrl();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        shared.close();
     }
 }
