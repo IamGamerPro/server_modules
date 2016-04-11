@@ -69,29 +69,29 @@ public class RegisterVerticle extends AbstractVerticle {
             });
         });
         router.get("/user-exists").handler(routingContext -> {
-            String email = routingContext.request().getParam("value");
-            JsonObject byEmail = new JsonObject().put("email", email);
-            checkExist(routingContext, byEmail);
-        });
-        router.get("/email-exists").handler(routingContext -> {
             String login = routingContext.request().getParam("value");
             JsonObject byLogin = new JsonObject().put("login", login);
             checkExist(routingContext, byLogin);
+        });
+        router.get("/email-exists").handler(routingContext -> {
+            String email = routingContext.request().getParam("value");
+            JsonObject byEmail = new JsonObject().put("email", email);
+            checkExist(routingContext, byEmail);
         });
         instance.mountPublicSubRouter("/register/v1/", router);
         vertx.createHttpServer().requestHandler(instance::accept).listen(port);
     }
 
-    private void checkExist(RoutingContext routingContext, JsonObject byEmail) {
-        shared.count("users", byEmail, result -> {
-           if(result.succeeded()){
-               Boolean b = result.result() > 0;
-               routingContext.response()
-                       .putHeader("content-type", MediaType.JSON_UTF_8.toString())
-                       .setStatusCode(200).end(Responses.resultMessage(b));
-           }else{
-               routingContext.fail(500);
-           }
+    private void checkExist(RoutingContext routingContext, final JsonObject query) {
+        shared.count("users", query, result -> {
+            if (result.succeeded()) {
+                Boolean b = result.result() > 0;
+                routingContext.response()
+                        .putHeader("content-type", MediaType.JSON_UTF_8.toString())
+                        .setStatusCode(200).end(Responses.resultMessage(b));
+            } else {
+                routingContext.fail(500);
+            }
         });
     }
 
