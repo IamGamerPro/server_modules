@@ -2,7 +2,6 @@ package client;
 
 import client.imp.ParamsRequest;
 import com.google.common.annotations.Beta;
-import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import io.vertx.core.AsyncResult;

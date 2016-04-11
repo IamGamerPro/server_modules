@@ -7,7 +7,6 @@ import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.AuthHandler;
 import pro.iamgamer.routing.imp.IamGamerRule;
 
 import java.util.Objects;

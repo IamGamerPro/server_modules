@@ -4,9 +4,8 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-
 import services.login.LoginVerticle;
-import services.register.v2.RegisterVerticle;
+import services.register.RegisterVerticle;
 import services.user.PrivateUserPageTest;
 
 import java.time.LocalTime;

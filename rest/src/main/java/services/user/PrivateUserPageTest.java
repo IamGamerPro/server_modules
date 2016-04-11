@@ -21,6 +21,6 @@ public class PrivateUserPageTest extends AbstractVerticle {
         });
         instance.mountRequiresAuthorizationSubRouter("/user", router);
 
-        vertx.createHttpServer().requestHandler(instance::accept).listen(8080);
+        vertx.createHttpServer().requestHandler(instance::accept).listen();
     }
 }
