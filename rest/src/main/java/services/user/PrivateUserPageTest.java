@@ -13,22 +13,29 @@ import pro.iamgamer.routing.RouteOrchestrator;
  */
 public class PrivateUserPageTest extends AbstractVerticle {
     private MongoClient shared;
+    private JsonObject databaseConfig;
+    private Integer port;
+    private RouteOrchestrator routeOrchestrator;
 
     @Override
     public void start() throws Exception {
-        JsonObject config = context.config();
-        JsonObject databaseConfig = config.getJsonObject("databaseConfig");
-        Integer port = config.getJsonObject("httServerConfig").getInteger("port");
-        shared = MongoClient.createShared(vertx, databaseConfig);
-        RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
+        serviceInitialization();
         Router router = Router.router(vertx);
         router.get().handler(requestHandler -> {
             User user = requestHandler.user();
             requestHandler.response().end(user.principal().encodePrettily());
         });
-        instance.mountRequiresAuthorizationSubRouter("/user", router);
+        routeOrchestrator.mountRequiresAuthorizationSubRouter("/user", router);
 
-        vertx.createHttpServer().requestHandler(instance::accept).listen();
+        vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen();
+    }
+
+    private void serviceInitialization() {
+        JsonObject config = context.config();
+        databaseConfig = config.getJsonObject("databaseConfig");
+        port = config.getJsonObject("httServerConfig").getInteger("port");
+        shared = MongoClient.createShared(vertx, databaseConfig);
+        routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
     }
 
     @Override
