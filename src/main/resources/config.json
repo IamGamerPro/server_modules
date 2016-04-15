@@ -19,5 +19,9 @@
     "usernameField": "login",
     "passwordField": "password",
     "saltField": "salt"
+  },
+  "mailClientConfig":{
+
   }
+
 }

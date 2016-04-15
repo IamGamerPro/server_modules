@@ -9,6 +9,10 @@ import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.JWTAuthHandler;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.handler.UserSessionHandler;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.SessionStore;
 import pro.iamgamer.auth.mongo.MongoAuth;
 import pro.iamgamer.routing.RouteOrchestrator;
 import pro.iamgamer.routing.csrf.PersistCSRFHandler;
@@ -25,8 +29,6 @@ public class LoginVerticle extends AbstractVerticle {
     private IamGamerRule iamGamerRule;
     private MongoAuth mongoAuth;
     private JWTAuth jwtAuth;
-    private JWTAuthHandler jwtAuthHandler;
-    private String privateUrls;
     private String loginUrl;
     private PersistCSRFHandler csrfHandler;
     private Integer port;
@@ -42,14 +44,12 @@ public class LoginVerticle extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         serviceInitialization();
-        Router router = routeOrchestrator.getBaseRouter();
-        router.route(privateUrls).handler(jwtAuthHandler);
-        router.route(privateUrls).handler(csrfHandler);
-        router.post(loginUrl).handler(requestHandler -> {
+        Router router = Router.router(vertx);
+        router.post().handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
             mongoAuth.authenticate(authParams, event -> {
                 if (event.succeeded()) {
-                    String value = jwtAuth.generateToken(new JsonObject(), new JWTOptions()
+                    String value = jwtAuth.generateToken(new JsonObject().put("sub", authParams.getValue("login")), new JWTOptions()
                             .setExpiresInMinutes(10080L));
                     String s = csrfHandler.generateToken();
                     requestHandler.response()
@@ -61,6 +61,7 @@ public class LoginVerticle extends AbstractVerticle {
                 }
             });
         });
+        routeOrchestrator.mountPublicSubRouter(loginUrl, router);
         vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
     }
 
@@ -70,7 +71,6 @@ public class LoginVerticle extends AbstractVerticle {
         mongoAuth.setUsernameCredentialField(mongoAuth.getUsernameField());
         mongoAuth.setPasswordCredentialField(mongoAuth.getPasswordField());
         jwtAuth = JWTAuth.create(vertx, keyStoreConfig);
-        jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
         csrfHandler = PersistCSRFHandler.create("qwerty1234");
     }
 
@@ -80,7 +80,6 @@ public class LoginVerticle extends AbstractVerticle {
         mongoDbAuthConfig = config.getJsonObject("mongoDbAuthConfig");
         port = config.getJsonObject("httServerConfig").getInteger("port");
         iamGamerRule = new IamGamerRule();
-        privateUrls = iamGamerRule.privateUrlPatch() + "/*";
         loginUrl = iamGamerRule.loginUrl();
     }
 

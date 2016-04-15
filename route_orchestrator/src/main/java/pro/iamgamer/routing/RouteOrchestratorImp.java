@@ -1,12 +1,15 @@
 package pro.iamgamer.routing;
 
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
+import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.*;
+import io.vertx.ext.web.sstore.LocalSessionStore;
+import pro.iamgamer.routing.csrf.PersistCSRFHandler;
 import pro.iamgamer.routing.imp.IamGamerRule;
 
 import java.util.Objects;
@@ -55,11 +58,20 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
             Objects.nonNull(routeOrchestratorRule);
             if (router == null) {
                 router = Router.router(vertx);
-                if (routeOrchestratorRule != null) {
-                    for (Handler<RoutingContext> handler : routeOrchestratorRule.baseHandlers()) {
-                        router.route().handler(handler);
-                    }
-                }
+                router.route().handler(BodyHandler.create());
+                router.route().handler(CookieHandler.create());
+                SessionHandler sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx));
+                sessionHandler.setCookieHttpOnlyFlag(true);
+                sessionHandler.setCookieSecureFlag(true);
+                sessionHandler.setSessionCookieName("JSESSIONID");
+                router.route().handler(sessionHandler);
+                router.route().handler(CorsHandler.create("*"));
+                JsonObject keyStoreConfig = vertx.getOrCreateContext().config().getJsonObject("keyStoreConfig");
+                JWTAuth jwtAuth = JWTAuth.create(vertx, keyStoreConfig);
+                JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
+                PersistCSRFHandler csrfHandler = PersistCSRFHandler.create("qwerty1234");
+                router.route(routeOrchestratorRule.privateUrlPatch() + "/*").handler(jwtAuthHandler);
+                router.route(routeOrchestratorRule.privateUrlPatch() + "/*").handler(csrfHandler);
             }
             return router;
 
@@ -82,10 +94,6 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
         return mountPublicSubRouter(routeOrchestratorRule.privateUrlPatch() + mountPoint, subRouter);
     }
 
-    @Override
-    public Router getBaseRouter() {
-        return baseRouter;
-    }
 
     @Override
     public void accept(HttpServerRequest request) {
