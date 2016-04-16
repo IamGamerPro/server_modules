@@ -1,17 +1,13 @@
 package services.user;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.AsyncResultHandler;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 import pro.iamgamer.routing.RouteOrchestrator;
 
 
@@ -44,34 +40,46 @@ public class UserPageVerticle extends AbstractVerticle {
 
     private void getUser(RoutingContext routingContext) {
         User user = routingContext.user();
-        String currentUser;
-        if(user != null){
-            String login = user.principal().getString("login");
-            if(login != null){
-                currentUser = login;
-            }
-        }
+        final String currentUser = getCurrentLogin(user);
         JsonObject excludeSelector = new JsonObject();
         excludeSelector.put("password", 0).put("salt", 0);
 
         JsonObject selector = new JsonObject();
         HttpServerRequest request = routingContext.request();
-        if(request.getParam("id") != null){
+        if (request.getParam("id") != null) {
             String id = request.getParam("id");
             selector.put("_id", id);
-        }else if(request.getParam("name") != null){
+        } else if (request.getParam("name") != null) {
             String name = request.getParam("name");
             selector.put("login", name);
-        }else if(request.getParam("email") != null){
+        } else if (request.getParam("email") != null) {
             String email = request.getParam("email");
             selector.put("emails", email);
         }
         mongoClient.findOne("users", selector, excludeSelector, (AsyncResultHandler<JsonObject>) event -> {
             JsonObject result = event.result();
+            if (!(currentUser != null && currentUser.equals(result.getString("login")))) {
+                result.remove("emails");
+            }
             routingContext.response()
                     .putHeader("content-type", "application/json")
                     .end(result.encode());
         });
+    }
+
+    private String getCurrentLogin(User user) {
+        String currentUser;
+        if (user != null) {
+            String login = user.principal().getString("login");
+            if (login != null) {
+                currentUser = login;
+            } else {
+                currentUser = null;
+            }
+        } else {
+            currentUser = null;
+        }
+        return currentUser;
     }
 
     @Override
