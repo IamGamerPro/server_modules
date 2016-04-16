@@ -19,6 +19,7 @@ public class UserPageVerticle extends AbstractVerticle {
     private JsonObject databaseConfig;
     private Integer port;
     private RouteOrchestrator routeOrchestrator;
+    private final JsonObject baseExcludeSelector = new JsonObject("{\"password\":0, \"salt\":0}");
 
     @Override
     public void start() throws Exception {
@@ -41,11 +42,21 @@ public class UserPageVerticle extends AbstractVerticle {
     private void getUser(RoutingContext routingContext) {
         User user = routingContext.user();
         final String currentUser = getCurrentLogin(user);
-        JsonObject excludeSelector = new JsonObject();
-        excludeSelector.put("password", 0).put("salt", 0);
-
-        JsonObject selector = new JsonObject();
         HttpServerRequest request = routingContext.request();
+        JsonObject selector = getQuerySelector(request);
+        mongoClient.findOne("users", selector, baseExcludeSelector, (AsyncResultHandler<JsonObject>) event -> {
+            JsonObject result = event.result();
+            if (!(currentUser != null && currentUser.equals(result.getString("login")))) {
+                result.remove("emails");
+            }
+            routingContext.response()
+                    .putHeader("content-type", "application/json")
+                    .end(result.encode());
+        });
+    }
+
+    private JsonObject getQuerySelector(HttpServerRequest request) {
+        JsonObject selector = new JsonObject();
         if (request.getParam("id") != null) {
             String id = request.getParam("id");
             selector.put("_id", id);
@@ -56,15 +67,7 @@ public class UserPageVerticle extends AbstractVerticle {
             String email = request.getParam("email");
             selector.put("emails", email);
         }
-        mongoClient.findOne("users", selector, excludeSelector, (AsyncResultHandler<JsonObject>) event -> {
-            JsonObject result = event.result();
-            if (!(currentUser != null && currentUser.equals(result.getString("login")))) {
-                result.remove("emails");
-            }
-            routingContext.response()
-                    .putHeader("content-type", "application/json")
-                    .end(result.encode());
-        });
+        return selector;
     }
 
     private String getCurrentLogin(User user) {
