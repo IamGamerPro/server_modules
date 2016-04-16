@@ -99,10 +99,9 @@ public class RegisterVerticle extends AbstractVerticle {
     private void mailValidation(String email, AsyncResult<String> generatedId) {
         shared.createCollection("callbacks", v2 -> {
             JsonObject callback = new JsonObject()
-                    .put("callback", new JsonObject()
                             .put("type", "mailValidation")
                             .put("user_id", generatedId.result())
-                            .put("email", email));
+                            .put("email", email);
             shared.insert("callbacks", callback, res -> {
                 if (res.succeeded()) {
                     String message = String.format("lolalhost:%d/confirmation/%s", port, res.result());
