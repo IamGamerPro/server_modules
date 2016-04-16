@@ -25,7 +25,7 @@ public class UserPageVerticle extends AbstractVerticle {
     public void start() throws Exception {
         serviceInitialization();
         Router router = Router.router(vertx);
-        router.get().handler(this::getUser);
+        router.get().handler(this::getUserPage);
         routeOrchestrator.mountRequiresAuthorizationSubRouter("/user", router);
 
         vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
@@ -39,11 +39,17 @@ public class UserPageVerticle extends AbstractVerticle {
         routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
     }
 
-    private void getUser(RoutingContext routingContext) {
+    private void getUserPage(RoutingContext routingContext) {
         User user = routingContext.user();
         final String currentUser = getCurrentLogin(user);
         HttpServerRequest request = routingContext.request();
-        JsonObject selector = getQuerySelector(request);
+        JsonObject selector;
+        try {
+            selector = getQuerySelector(request);
+        } catch (Exception e) {
+            routingContext.fail(400);
+            return;
+        }
         mongoClient.findOne("users", selector, baseExcludeSelector, (AsyncResultHandler<JsonObject>) event -> {
             JsonObject result = event.result();
             if (!(currentUser != null && currentUser.equals(result.getString("login")))) {
@@ -53,6 +59,7 @@ public class UserPageVerticle extends AbstractVerticle {
                     .putHeader("content-type", "application/json")
                     .end(result.encode());
         });
+
     }
 
     private JsonObject getQuerySelector(HttpServerRequest request) {
@@ -63,10 +70,10 @@ public class UserPageVerticle extends AbstractVerticle {
         } else if (request.getParam("name") != null) {
             String name = request.getParam("name");
             selector.put("login", name);
-        } else if (request.getParam("email") != null) {
-            String email = request.getParam("email");
-            selector.put("emails", email);
+        } else {
+            throw new RuntimeException();
         }
+
         return selector;
     }
 
