@@ -21,6 +21,10 @@
     "saltField": "salt"
   },
   "mailClientConfig":{
+    "server":"mail.nic.ru",
+    "port":465,
+    "login":"develop@iamgamer.pro",
+    "pwd":"ghbdtnklov0"
 
   }
 
