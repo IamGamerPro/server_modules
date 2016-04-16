@@ -6,7 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import services.login.LoginVerticle;
 import services.register.RegisterVerticle;
-import services.user.PrivateUserPageTest;
+import services.user.UserPageVerticle;
 
 import java.time.LocalTime;
 
@@ -22,7 +22,7 @@ public class Starter {
         DeploymentOptions deploymentOptions = readConfiguration();
         vertx.deployVerticle(RegisterVerticle.class.getCanonicalName(), deploymentOptions);
         vertx.deployVerticle(LoginVerticle.class.getCanonicalName(), new DeploymentOptions(deploymentOptions).setInstances(10));
-        vertx.deployVerticle(PrivateUserPageTest.class.getCanonicalName(), deploymentOptions);
+        vertx.deployVerticle(UserPageVerticle.class.getCanonicalName(), deploymentOptions);
         System.out.println(LocalTime.now() + " server started successfully");
     }
 

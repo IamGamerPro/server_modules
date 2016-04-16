@@ -8,11 +8,6 @@ import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.JWTAuthHandler;
-import io.vertx.ext.web.handler.SessionHandler;
-import io.vertx.ext.web.handler.UserSessionHandler;
-import io.vertx.ext.web.sstore.LocalSessionStore;
-import io.vertx.ext.web.sstore.SessionStore;
 import pro.iamgamer.auth.mongo.MongoAuth;
 import pro.iamgamer.routing.RouteOrchestrator;
 import pro.iamgamer.routing.csrf.PersistCSRFHandler;
@@ -47,15 +42,25 @@ public class LoginVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.post().handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
+            final Integer authenticationMode = authParams.getInteger("authenticationMode");
             mongoAuth.authenticate(authParams, event -> {
                 if (event.succeeded()) {
-                    String value = jwtAuth.generateToken(new JsonObject().put("sub", authParams.getValue("login")), new JWTOptions()
-                            .setExpiresInMinutes(10080L));
-                    String s = csrfHandler.generateToken();
-                    requestHandler.response()
-                            .putHeader(csrfHandler.getHeaderName(), s)
-                            .putHeader("X-JWT-TOKEN", value)
-                            .end();
+                    switch (authenticationMode) {
+                        case 0:
+                            String value = jwtAuth.generateToken(new JsonObject().put("sub", authParams.getValue("login")), new JWTOptions()
+                                    .setExpiresInMinutes(10080L));
+                            String s = csrfHandler.generateToken();
+                            requestHandler.response()
+                                    .putHeader(csrfHandler.getHeaderName(), s)
+                                    .putHeader("X-JWT-TOKEN", value)
+                                    .end();
+                            break;
+                        case 1:
+                            requestHandler.response().end();
+                            break;
+                        default:
+                            requestHandler.fail(403);
+                    }
                 } else {
                     requestHandler.fail(403);
                 }
