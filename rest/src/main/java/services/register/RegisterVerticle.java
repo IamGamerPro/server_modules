@@ -2,11 +2,13 @@ package services.register;
 
 import com.google.common.net.MediaType;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mail.MailClient;
 import io.vertx.ext.mail.MailConfig;
+import io.vertx.ext.mail.MailMessage;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -16,18 +18,19 @@ import services.Responses;
 
 /**
  * Created by Sergey Kobets on 10.04.2016.
- * Experimental MongoDB Register
  */
 public class RegisterVerticle extends AbstractVerticle {
     private MongoClient shared;
+    private MailClient mailValidation;
+    private Integer port;
 
     @Override
     public void start() throws Exception {
         JsonObject config = context.config();
         JsonObject databaseConfig = config.getJsonObject("databaseConfig");
         JsonObject mailClientConfig = config.getJsonObject("mailClientConfig");
-        MailClient mailValidation = MailClient.createShared(vertx, new MailConfig(mailClientConfig), "mailValidation");
-        Integer port = config.getJsonObject("httServerConfig").getInteger("port");
+        mailValidation = MailClient.createShared(vertx, new MailConfig(mailClientConfig), "mailValidation");
+        port = config.getJsonObject("httServerConfig").getInteger("port");
         shared = MongoClient.createShared(vertx, databaseConfig);
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
 
@@ -40,7 +43,7 @@ public class RegisterVerticle extends AbstractVerticle {
         });
         router.get("/email-exists").handler(routingContext -> {
             String email = routingContext.request().getParam("value");
-            JsonObject byEmail = new JsonObject().put("email", email);
+            JsonObject byEmail = new JsonObject().put("emails.email", email);
             checkExist(routingContext, byEmail);
         });
         instance.mountPublicSubRouter("/register/v1/", router);
@@ -79,6 +82,7 @@ public class RegisterVerticle extends AbstractVerticle {
                             document.put("salt", new JsonObject().put("$binary", salt));
                             shared.insert("users", document, generatedId -> {
                                         if (generatedId.succeeded()) {
+                                            mailValidation(email, generatedId);
                                             routingContext.response().setStatusCode(201);
                                             routingContext.reroute(HttpMethod.POST, "/login");
                                         } else {
@@ -89,6 +93,29 @@ public class RegisterVerticle extends AbstractVerticle {
                         }
                 );
             }
+        });
+    }
+
+    private void mailValidation(String email, AsyncResult<String> generatedId) {
+        shared.createCollection("callbacks", v2 -> {
+            JsonObject callback = new JsonObject()
+                    .put("callback", new JsonObject()
+                            .put("type", "mailValidation")
+                            .put("user_id", generatedId.result())
+                            .put("email", email));
+            shared.insert("callbacks", callback, res -> {
+                if (res.succeeded()) {
+                    String message = String.format("lolalhost:%d/confirmation/%s", port, res.result());
+                    mailValidation.sendMail(
+                            new MailMessage("developer@iamgamer.pro", email, "IamGamer Account Confirmation", message),
+                            sentResult -> {
+                                if (sentResult.failed()) {
+                                    System.err.println(sentResult.cause().getMessage());
+                                }
+                            });
+
+                }
+            });
         });
     }
 
