@@ -47,7 +47,48 @@ public class RegisterVerticle extends AbstractVerticle {
             checkExist(routingContext, byEmail);
         });
         instance.mountPublicSubRouter("/register/v1/", router);
+
+        Router mails = Router.router(vertx);
+        mails.post().handler(this::addEmail);
+        mails.delete().handler(this::deleteEmail);
+        instance.mountRequiresAuthorizationSubRouter("/mail", mails);
         vertx.createHttpServer().requestHandler(instance::accept).listen(port);
+    }
+
+    private void deleteEmail(RoutingContext routingContext) {
+        if (routingContext.user() != null) {
+            JsonObject principal = routingContext.user().principal();
+            if (principal != null) {
+                String id = principal.getString("id");
+                if (id != null) {
+                    String email = routingContext.request().getParam("value");
+                    JsonObject query = new JsonObject()
+                            .put("#oid",
+                                    new JsonObject()
+                                            .put("_id", id)
+                                            .put("emails.1",
+                                                    new JsonObject()
+                                                            .put("$exist", true))
+                                            .put("emails.mail", email));
+                    JsonObject remove = new JsonObject()
+                            .put("$pull",
+                                    new JsonObject()
+                                            .put("emails",
+                                                    new JsonObject()
+                                                            .put("mail", email)));
+                    shared.update("users", query, remove,
+                            event -> routingContext.response().end());
+                }
+            }
+        }
+        routingContext.fail(500);
+
+
+    }
+
+    private void addEmail(RoutingContext routingContext) {
+        String email = routingContext.request().getParam("value");
+        routingContext.response().end();
     }
 
     private void register(RoutingContext routingContext) {
