@@ -35,6 +35,7 @@ public class RegisterVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.post().handler(this::register);
+        router.post("/change-password").handler(this::changePassword);
         router.get("/user-exists").handler(routingContext -> {
             String login = routingContext.request().getParam("value");
             JsonObject byLogin = new JsonObject().put("login", login);
@@ -52,6 +53,13 @@ public class RegisterVerticle extends AbstractVerticle {
         mails.delete().handler(this::deleteEmail);
         instance.mountRequiresAuthorizationSubRouter("/mail", mails);
         vertx.createHttpServer().requestHandler(instance::accept).listen(port);
+    }
+
+    private void changePassword(RoutingContext routingContext) {
+        JsonObject bodyAsJson = routingContext.getBodyAsJson();
+        String currentPwd = bodyAsJson.getString("currentPwd");
+        String newPwd = bodyAsJson.getString("newPwd");
+        routingContext.response().end();
     }
 
     private void deleteEmail(RoutingContext routingContext) {
