@@ -38,7 +38,9 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
                                     );
                             mongoClient.updateWithOptions("users", selector, update, new UpdateOptions().setWriteOption(WriteOption.ACKNOWLEDGED), r -> {
                                 if (r.succeeded()) {
-                                    routingContext.response().end();
+                                    mongoClient.removeOne("callbacks", new JsonObject().put("_id", new JsonObject().put("$oid", callbackId)), res -> {
+                                        routingContext.response().end();
+                                    });
                                 } else {
                                     routingContext.fail(r.cause());
                                 }
