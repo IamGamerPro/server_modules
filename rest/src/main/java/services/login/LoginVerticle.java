@@ -59,7 +59,7 @@ public class LoginVerticle extends AbstractVerticle {
                             requestHandler.response().end();
                             break;
                         default:
-                            requestHandler.fail(403);
+                            requestHandler.response().end();
                     }
                 } else {
                     requestHandler.fail(403);
