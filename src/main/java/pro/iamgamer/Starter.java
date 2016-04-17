@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import services.login.LoginVerticle;
+import services.mail.ConfirmationCallbackVerticle;
 import services.register.RegisterVerticle;
 import services.user.UserPageVerticle;
 
@@ -23,6 +24,7 @@ public class Starter {
         vertx.deployVerticle(RegisterVerticle.class.getCanonicalName(), deploymentOptions);
         vertx.deployVerticle(LoginVerticle.class.getCanonicalName(), new DeploymentOptions(deploymentOptions).setInstances(10));
         vertx.deployVerticle(UserPageVerticle.class.getCanonicalName(), deploymentOptions);
+        vertx.deployVerticle(ConfirmationCallbackVerticle.class.getCanonicalName(), deploymentOptions);
         System.out.println(LocalTime.now() + " server started successfully");
     }
 
