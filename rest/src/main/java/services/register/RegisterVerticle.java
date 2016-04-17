@@ -59,17 +59,17 @@ public class RegisterVerticle extends AbstractVerticle {
         if (routingContext.user() != null) {
             JsonObject principal = routingContext.user().principal();
             if (principal != null) {
-                String id = principal.getString("id");
+                String id = principal.getString("userId");
                 if (id != null) {
                     String email = routingContext.request().getParam("value");
                     JsonObject query = new JsonObject()
-                            .put("#oid",
+                            .put("_id",
                                     new JsonObject()
-                                            .put("_id", id)
-                                            .put("emails.1",
-                                                    new JsonObject()
-                                                            .put("$exist", true))
-                                            .put("emails.mail", email));
+                                            .put("$oid", id))
+                            .put("emails.1",
+                                    new JsonObject()
+                                            .put("$exists", true))
+                            .put("emails.mail", email);
                     JsonObject remove = new JsonObject()
                             .put("$pull",
                                     new JsonObject()
@@ -78,6 +78,7 @@ public class RegisterVerticle extends AbstractVerticle {
                                                             .put("mail", email)));
                     shared.update("users", query, remove,
                             event -> routingContext.response().end());
+                    return;
                 }
             }
         }
