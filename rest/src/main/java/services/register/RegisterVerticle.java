@@ -90,7 +90,6 @@ public class RegisterVerticle extends AbstractVerticle {
                             }, false, result2 -> {
                                 if (result2.succeeded()) {
                                     byte[][] newHash = result2.result();
-
                                     JsonObject document = new JsonObject();
                                     document.put("password", new JsonObject().put("$binary", newHash[0]));
                                     document.put("salt", new JsonObject().put("$binary", newHash[1]));
