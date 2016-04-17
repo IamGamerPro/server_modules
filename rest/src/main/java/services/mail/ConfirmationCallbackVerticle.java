@@ -3,6 +3,8 @@ package services.mail;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.UpdateOptions;
+import io.vertx.ext.mongo.WriteOption;
 import io.vertx.ext.web.Router;
 import pro.iamgamer.routing.RouteOrchestrator;
 
@@ -27,17 +29,17 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
                     String type = callback.getString("type");
                     switch (type) {
                         case "mailValidation":
+                            String user_id = callback.getString("user_id");
                             JsonObject selector = new JsonObject()
-                                    .put("_id", callback.getString("user_id"))
+                                    .put("_id", new JsonObject().put("$oid", user_id))
                                     .put("emails.mail", callback.getString("email"));
                             JsonObject update = new JsonObject()
-                                    .put("$set",
-                                            new JsonObject().put("emails.$.checked", true)
+                                    .put("$set", new JsonObject().put("emails.$.checked", true)
                                     );
-                            mongoClient.update("users", selector, update, r -> {
-                                if(r.succeeded()){
+                            mongoClient.updateWithOptions("users", selector, update, new UpdateOptions().setWriteOption(WriteOption.ACKNOWLEDGED), r -> {
+                                if (r.succeeded()) {
                                     routingContext.response().end();
-                                }else{
+                                } else {
                                     routingContext.fail(r.cause());
                                 }
                             });
