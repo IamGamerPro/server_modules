@@ -106,7 +106,7 @@ public class RegisterVerticle extends AbstractVerticle {
                 if (res.succeeded()) {
                     String message = String.format("lolalhost:%d/confirmation/%s", port, res.result());
                     mailValidation.sendMail(
-                            new MailMessage("developer@iamgamer.pro", email, "IamGamer Account Confirmation", message),
+                            new MailMessage("develop@iamgamer.pro", email, "IamGamer Account Confirmation", message),
                             sentResult -> {
                                 if (sentResult.failed()) {
                                     System.err.println(sentResult.cause().getMessage());
