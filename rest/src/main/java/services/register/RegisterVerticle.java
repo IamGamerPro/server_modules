@@ -94,8 +94,8 @@ public class RegisterVerticle extends AbstractVerticle {
                                     JsonObject document = new JsonObject();
                                     document.put("password", new JsonObject().put("$binary", newHash[0]));
                                     document.put("salt", new JsonObject().put("$binary", newHash[1]));
-
-                                    shared.update("users", userById, document, (AsyncResultHandler<Void>) event -> {
+                                    JsonObject update = new JsonObject().put("$set", document);
+                                    shared.update("users", userById, update, (AsyncResultHandler<Void>) event -> {
                                         System.out.println("треш оно работает!");
                                         routingContext.response().end();
                                     });
