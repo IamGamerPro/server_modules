@@ -27,6 +27,7 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
                     String type = callback.getString("type");
                     switch (type) {
                         case "mailValidation":
+                            routingContext.response().end();
 /*
                             mongoClient.update("users",
                                     new JsonObject().put("_id", callback.getString("user_id"))*/
