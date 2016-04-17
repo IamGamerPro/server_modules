@@ -42,7 +42,7 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
                                         routingContext.response().end();
                                     });
                                 } else {
-                                    routingContext.fail(r.cause());
+                                    routingContext.fail(500);
                                 }
                             });
 
