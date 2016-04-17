@@ -124,7 +124,7 @@ public class RegisterVerticle extends AbstractVerticle {
                             document.put("salt", new JsonObject().put("$binary", salt));
                             shared.insert("users", document, generatedId -> {
                                         if (generatedId.succeeded()) {
-                                            mailValidation(email, generatedId);
+                                            mailValidation(email, generatedId.result());
                                             routingContext.response().setStatusCode(201);
                                             routingContext.reroute(HttpMethod.POST, "/login");
                                         } else {
@@ -138,11 +138,11 @@ public class RegisterVerticle extends AbstractVerticle {
         });
     }
 
-    private void mailValidation(String email, AsyncResult<String> generatedId) {
+    private void mailValidation(String email, String generatedId) {
         shared.createCollection("callbacks", v2 -> {
             JsonObject callback = new JsonObject()
                     .put("type", "mailValidation")
-                    .put("user_id", generatedId.result())
+                    .put("user_id", generatedId)
                     .put("email", email);
             shared.insert("callbacks", callback, res -> {
                 if (res.succeeded()) {
