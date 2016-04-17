@@ -88,7 +88,33 @@ public class RegisterVerticle extends AbstractVerticle {
 
     private void addEmail(RoutingContext routingContext) {
         String email = routingContext.request().getParam("value");
-        routingContext.response().end("sorry, not implemented");
+        if (routingContext.user() != null && email != null) {
+            JsonObject principal = routingContext.user().principal();
+            if (principal != null) {
+                String id = principal.getString("userId");
+                if (id != null) {
+                    JsonObject query = new JsonObject()
+                            .put("_id",
+                                    new JsonObject()
+                                            .put("$oid", id));
+                    JsonObject update = new JsonObject()
+                            .put("emails",
+                                    new JsonObject()
+                                            .put("$push", new JsonObject()
+                                                    .put("mail", email)
+                                                    .put("primary", true)
+                                                    .put("checked", false)));
+                    shared.update("users", query, update, res -> {
+                        if (res.succeeded()) {
+                            routingContext.response().end();
+                        } else {
+                            routingContext.fail(res.cause());
+                        }
+                    });
+                }
+            }
+        }
+        routingContext.fail(500);
     }
 
     private void register(RoutingContext routingContext) {
