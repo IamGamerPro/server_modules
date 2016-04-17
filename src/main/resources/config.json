@@ -22,11 +22,9 @@
   },
   "mailClientConfig":{
     "hostname":"mail.nic.ru",
-    "port":465,
+    "port":2525,
     "username":"develop@iamgamer.pro",
-    "password":"ghbdtnklov0",
-    "ssl":true
-
+    "password":"ghbdtnklov0"
   }
 
 }
