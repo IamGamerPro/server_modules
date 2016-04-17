@@ -61,8 +61,8 @@ public class RegisterVerticle extends AbstractVerticle {
 
     private void changePassword(RoutingContext routingContext) {
         Optional<String> userId = getUserId(routingContext);
-        final JsonObject userById = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
         if (userId.isPresent()) {
+            final JsonObject userById = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
             JsonObject bodyAsJson = routingContext.getBodyAsJson();
             final String currentPwd = bodyAsJson.getString("currentPwd");
             final String newPwd = bodyAsJson.getString("newPwd");
