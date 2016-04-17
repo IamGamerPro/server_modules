@@ -12,7 +12,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.routing.RouteOrchestrator;
 
-import javax.validation.ValidatorContext;
 import java.nio.charset.Charset;
 import java.util.Optional;
 

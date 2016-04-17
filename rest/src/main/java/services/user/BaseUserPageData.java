@@ -16,7 +16,7 @@ public class BaseUserPageData {
     private Integer mb;
     private Integer yb;
     private String hometown;
-    private String sex;
+    private Integer sex;
     private String favoriteGames;
     private String favoriteMusic;
     private String aboutMe;
@@ -46,11 +46,11 @@ public class BaseUserPageData {
         this.hometown = hometown;
     }
 
-    public String getSex() {
+    public Integer getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Integer sex) {
         this.sex = sex;
     }
 
