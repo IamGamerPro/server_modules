@@ -13,6 +13,8 @@ import pro.iamgamer.routing.RouteOrchestrator;
  */
 public class ConfirmationCallbackVerticle extends AbstractVerticle {
 
+    private MongoClient mongoClient;
+
     @Override
     public void start() throws Exception {
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
@@ -20,7 +22,7 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
         JsonObject config = context.config();
         JsonObject databaseConfig = config.getJsonObject("databaseConfig");
         Integer port = config.getJsonObject("httServerConfig").getInteger("port");
-        MongoClient mongoClient = MongoClient.createShared(vertx, databaseConfig, "callbacks");
+        mongoClient = MongoClient.createShared(vertx, databaseConfig, "callbacks");
         router.get("/:callbackId").handler(routingContext -> {
             String callbackId = routingContext.request().getParam("callbackId");
             mongoClient.findOne("callbacks", new JsonObject().put("_id", callbackId), null, result -> {
@@ -60,5 +62,10 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
         instance.mountPublicSubRouter("/confirmation", router);
 
         vertx.createHttpServer().requestHandler(instance::accept).listen(port);
+    }
+
+    @Override
+    public void stop() throws Exception {
+        mongoClient.close();
     }
 }
