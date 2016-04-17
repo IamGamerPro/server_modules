@@ -106,6 +106,7 @@ public class RegisterVerticle extends AbstractVerticle {
                                                     .put("checked", false)));
                     shared.update("users", query, update, res -> {
                         if (res.succeeded()) {
+                            mailValidation(email, id);
                             routingContext.response().end();
                         } else {
                             routingContext.fail(res.cause());
