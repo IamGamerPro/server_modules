@@ -97,12 +97,12 @@ public class RegisterVerticle extends AbstractVerticle {
                             .put("_id",
                                     new JsonObject()
                                             .put("$oid", id));
-                    JsonObject update = new JsonObject()
-                            .put("emails",
-                                    new JsonObject()
-                                            .put("$push", new JsonObject()
+                    JsonObject update =
+                            new JsonObject()
+                                    .put("$push", new JsonObject().put("emails",
+                                            new JsonObject()
                                                     .put("mail", email)
-                                                    .put("primary", true)
+                                                    .put("primary", false)
                                                     .put("checked", false)));
                     shared.update("users", query, update, res -> {
                         if (res.succeeded()) {
@@ -112,10 +112,15 @@ public class RegisterVerticle extends AbstractVerticle {
                             routingContext.fail(res.cause());
                         }
                     });
+                } else {
+                    routingContext.fail(500);
                 }
+            } else {
+                routingContext.fail(500);
             }
+        } else {
+            routingContext.fail(500);
         }
-        routingContext.fail(500);
     }
 
     private void register(RoutingContext routingContext) {
