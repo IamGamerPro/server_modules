@@ -147,7 +147,7 @@ public class RegisterVerticle extends AbstractVerticle {
             shared.insert("callbacks", callback, res -> {
                 if (res.succeeded()) {
 
-                    String message = " <div> <a rel=\"noopener\" href=\"" + String.format("localhost:%d/confirmation/%s", port, res.result())
+                    String message = " <div> <a rel=\"noopener\" href=\"" + String.format("http://localhost:%d/confirmation/%s", port, res.result())
                             + "\" target=\"_blank\">" + String.format("localhost:%d/confirmation/%s", port, res.result()) + "</a> <div>";
 
                     mailClient.sendMail(
