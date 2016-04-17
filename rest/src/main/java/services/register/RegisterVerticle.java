@@ -21,7 +21,7 @@ import services.Responses;
  */
 public class RegisterVerticle extends AbstractVerticle {
     private MongoClient shared;
-    private MailClient mailValidation;
+    private MailClient mailClient;
     private Integer port;
 
     @Override
@@ -29,7 +29,7 @@ public class RegisterVerticle extends AbstractVerticle {
         JsonObject config = context.config();
         JsonObject databaseConfig = config.getJsonObject("databaseConfig");
         JsonObject mailClientConfig = config.getJsonObject("mailClientConfig");
-        mailValidation = MailClient.createShared(vertx, new MailConfig(mailClientConfig), "mailValidation");
+        mailClient = MailClient.createShared(vertx, new MailConfig(mailClientConfig), "mailValidation");
         port = config.getJsonObject("httServerConfig").getInteger("port");
         shared = MongoClient.createShared(vertx, databaseConfig);
         RouteOrchestrator instance = RouteOrchestrator.getInstance(vertx, "/api");
@@ -150,7 +150,7 @@ public class RegisterVerticle extends AbstractVerticle {
                     String message = " <div> <a rel=\"noopener\" href=\"" + String.format("localhost:%d/confirmation/%s", port, res.result())
                             + "\" target=\"_blank\">" + String.format("localhost:%d/confirmation/%s", port, res.result()) + "</a> <div>";
 
-                    mailValidation.sendMail(
+                    mailClient.sendMail(
                             new MailMessage()
                                     .setFrom("develop@iamgamer.pro")
                                     .setTo(email)
@@ -183,6 +183,7 @@ public class RegisterVerticle extends AbstractVerticle {
     @Override
     public void stop() throws Exception {
         shared.close();
+        mailClient.close();
     }
 }
 
