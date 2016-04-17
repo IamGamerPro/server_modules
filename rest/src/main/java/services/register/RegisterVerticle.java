@@ -88,7 +88,7 @@ public class RegisterVerticle extends AbstractVerticle {
 
     private void addEmail(RoutingContext routingContext) {
         String email = routingContext.request().getParam("value");
-        routingContext.response().end();
+        routingContext.response().end("sorry, not implemented");
     }
 
     private void register(RoutingContext routingContext) {
