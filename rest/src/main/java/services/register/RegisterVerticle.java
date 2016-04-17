@@ -99,14 +99,21 @@ public class RegisterVerticle extends AbstractVerticle {
     private void mailValidation(String email, AsyncResult<String> generatedId) {
         shared.createCollection("callbacks", v2 -> {
             JsonObject callback = new JsonObject()
-                            .put("type", "mailValidation")
-                            .put("user_id", generatedId.result())
-                            .put("email", email);
+                    .put("type", "mailValidation")
+                    .put("user_id", generatedId.result())
+                    .put("email", email);
             shared.insert("callbacks", callback, res -> {
                 if (res.succeeded()) {
-                    String message = String.format("lolalhost:%d/confirmation/%s", port, res.result());
+
+                    String message = " <div> <a rel=\"noopener\" href=\"" + String.format("localhost:%d/confirmation/%s", port, res.result())
+                            + "\" target=\"_blank\">" + String.format("localhost:%d/confirmation/%s", port, res.result()) + "</a> <div>";
+
                     mailValidation.sendMail(
-                            new MailMessage("develop@iamgamer.pro", email, "IamGamer Account Confirmation", message),
+                            new MailMessage()
+                                    .setFrom("develop@iamgamer.pro")
+                                    .setTo(email)
+                                    .setSubject("IamGamer Account Confirmation")
+                                    .setHtml(message),
                             sentResult -> {
                                 if (sentResult.failed()) {
                                     System.err.println(sentResult.cause().getMessage());
