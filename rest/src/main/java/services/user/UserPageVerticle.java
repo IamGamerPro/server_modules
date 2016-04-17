@@ -1,5 +1,6 @@
 package services.user;
 
+import com.google.common.base.MoreObjects;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.http.HttpServerRequest;
@@ -9,6 +10,8 @@ import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.routing.RouteOrchestrator;
+
+import java.util.Optional;
 
 
 /**
@@ -26,9 +29,33 @@ public class UserPageVerticle extends AbstractVerticle {
         serviceInitialization();
         Router router = Router.router(vertx);
         router.get().handler(this::getUserPage);
+        router.put().handler(this::updateUserPage);
         routeOrchestrator.mountRequiresAuthorizationSubRouter("/user", router);
 
         vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
+    }
+
+    private void updateUserPage(RoutingContext routingContext) {
+        Optional<String> userId = Optional.ofNullable(routingContext.user())
+                .map(User::principal)
+                .map(c -> c.getString("userId"));
+        if (userId.isPresent()) {
+            JsonObject bodyAsJson = routingContext.getBodyAsJson();
+            JsonObject query = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
+            /*TODO нужна валидация ! */
+            JsonObject set = new JsonObject().put("$set", bodyAsJson);
+            mongoClient.update("users", query, set, res -> {
+                if (res.succeeded()) {
+                    routingContext.response().end();
+                } else {
+                    routingContext.fail(400);
+                }
+
+            });
+        } else {
+            routingContext.fail(403);
+        }
+
     }
 
     private void serviceInitialization() {
@@ -80,7 +107,9 @@ public class UserPageVerticle extends AbstractVerticle {
     private String getCurrentLogin(User user) {
         String currentUser;
         if (user != null) {
-            String login = user.principal().getString("login");
+            String login = MoreObjects.firstNonNull(
+                    user.principal().getString("sub"),
+                    user.principal().getString("login"));
             if (login != null) {
                 currentUser = login;
             } else {
