@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.mongo.MongoClient;
@@ -50,7 +51,10 @@ public class LoginVerticle extends AbstractVerticle {
                 if (event.succeeded()) {
                     switch (authenticationMode) {
                         case 0:
-                            String value = jwtAuth.generateToken(new JsonObject().put("sub", authParams.getValue("login")), new JWTOptions()
+                            String userId = event.result().principal().getJsonObject("_id").getString("$oid");
+                            String value = jwtAuth.generateToken(new JsonObject()
+                                    .put("sub", authParams.getValue("login"))
+                                    .put("userId", userId), new JWTOptions()
                                     .setExpiresInMinutes(10080L));
                             String s = csrfHandler.generateToken();
                             requestHandler.response()
