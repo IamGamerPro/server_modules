@@ -2,6 +2,7 @@ package services.register;
 
 import com.google.common.net.MediaType;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -14,6 +15,9 @@ import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.core.security.PasswordUtils;
 import pro.iamgamer.routing.RouteOrchestrator;
 import services.Responses;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Created by Sergey Kobets on 10.04.2016.
@@ -56,10 +60,70 @@ public class RegisterVerticle extends AbstractVerticle {
     }
 
     private void changePassword(RoutingContext routingContext) {
-        JsonObject bodyAsJson = routingContext.getBodyAsJson();
-        String currentPwd = bodyAsJson.getString("currentPwd");
-        String newPwd = bodyAsJson.getString("newPwd");
-        routingContext.response().end();
+        Optional<String> userId = getUserId(routingContext);
+        final JsonObject userById = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
+        if (userId.isPresent()) {
+            JsonObject bodyAsJson = routingContext.getBodyAsJson();
+            final String currentPwd = bodyAsJson.getString("currentPwd");
+            final String newPwd = bodyAsJson.getString("newPwd");
+
+            shared.findOne("users",
+                    userById,
+                    new JsonObject().put("salt", 1).put("password", 1),
+                    result -> {
+                        if (result.succeeded()) {
+                            vertx.<byte[][]>executeBlocking(future -> {
+                                try {
+                                    byte[] salt = result.result().getBinary("salt");
+                                    byte[] passwords = result.result().getBinary("password");
+                                    final byte[] hash = PasswordUtils.hash(currentPwd.toCharArray(), salt);
+                                    if (!Arrays.equals(hash, passwords)) {
+                                        future.fail("incorrectPwd");
+                                    }
+                                    byte[] newSalt = PasswordUtils.randomSalt();
+                                    byte[] newPassword = PasswordUtils.hash(newPwd.toCharArray(), newSalt);
+                                    final byte[][] bytes = {newPassword, newSalt};
+                                    future.complete(bytes);
+                                } catch (Exception e) {
+                                    future.fail(e);
+                                }
+                            }, false, result2 -> {
+                                if (result2.succeeded()) {
+                                    byte[][] newHash = result2.result();
+
+                                    JsonObject document = new JsonObject();
+                                    document.put("password", new JsonObject().put("$binary", newHash[0]));
+                                    document.put("salt", new JsonObject().put("$binary", newHash[1]));
+
+                                    shared.update("users", userById, document, (AsyncResultHandler<Void>) event -> {
+                                        System.out.println("треш оно работает!");
+                                        routingContext.response().end();
+                                    });
+
+                                } else {
+                                    routingContext.fail(403);
+                                }
+                            });
+                        }
+                    });
+        } else {
+            routingContext.fail(403);
+        }
+    }
+
+    private Optional<String> getUserId(RoutingContext routingContext) {
+        String id;
+        if (routingContext.user() != null) {
+            JsonObject principal = routingContext.user().principal();
+            if (principal != null) {
+                id = principal.getString("userId");
+            } else {
+                id = null;
+            }
+        } else {
+            id = null;
+        }
+        return Optional.ofNullable(id);
     }
 
     private void deleteEmail(RoutingContext routingContext) {
