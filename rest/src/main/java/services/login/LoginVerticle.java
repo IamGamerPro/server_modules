@@ -42,7 +42,10 @@ public class LoginVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.post().handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
-            final Integer authenticationMode = authParams.getInteger("authenticationMode");
+            final Integer authenticationMode =
+                    (authParams.getInteger("authenticationMode") != null)
+                            ? authParams.getInteger("authenticationMode")
+                            : 0;
             mongoAuth.authenticate(authParams, event -> {
                 if (event.succeeded()) {
                     switch (authenticationMode) {
