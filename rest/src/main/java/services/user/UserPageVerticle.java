@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.mongo.MongoClient;
@@ -11,6 +12,8 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.routing.RouteOrchestrator;
 
+import javax.validation.ValidatorContext;
+import java.nio.charset.Charset;
 import java.util.Optional;
 
 
@@ -40,10 +43,10 @@ public class UserPageVerticle extends AbstractVerticle {
                 .map(User::principal)
                 .map(c -> c.getString("userId"));
         if (userId.isPresent()) {
-            JsonObject bodyAsJson = routingContext.getBodyAsJson();
+            BaseUserPageData baseUserPageData = Json.decodeValue(routingContext.getBody().toString(Charset.forName("UTF-8")), BaseUserPageData.class);
             JsonObject query = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
             /*TODO нужна валидация ! */
-            JsonObject set = new JsonObject().put("$set", bodyAsJson);
+            JsonObject set = new JsonObject().put("$set", new JsonObject(Json.encode(baseUserPageData)));
             mongoClient.update("users", query, set, res -> {
                 if (res.succeeded()) {
                     routingContext.response().end();
