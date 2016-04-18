@@ -67,7 +67,8 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                 router.route().handler(sessionHandler);
                 CorsHandler cors = CorsHandler
                                         .create("*")
-                                        .allowedHeader("X-JWT-TOKEN")
+                                        .allowedMethods(Sets.newHashSet(HttpMethod.OPTIONS, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.GET, HttpMethod.PUT))
+                                        .allowedHeaders(Sets.newHashSet("X-JWT-TOKEN", "X-XSRF-TOKEN", "Authorization"))
                                         .allowedHeader("X-XSRF-TOKEN")
                                         .allowCredentials(true);
                 router.route().handler(cors);
