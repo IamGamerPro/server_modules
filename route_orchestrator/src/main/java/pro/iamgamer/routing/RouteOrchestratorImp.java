@@ -65,7 +65,7 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                 sessionHandler.setCookieSecureFlag(true);
                 sessionHandler.setSessionCookieName("JSESSIONID");
                 router.route().handler(sessionHandler);
-                router.route().handler(CorsHandler.create("*"));
+                router.route().handler(CorsHandler.create("*").allowedHeader("X-JWT-TOKEN").allowedHeader("X-XSRF-TOKEN").allowCredentials(true));
                 JsonObject keyStoreConfig = vertx.getOrCreateContext().config().getJsonObject("keyStoreConfig");
                 JWTAuth jwtAuth = JWTAuth.create(vertx, keyStoreConfig);
                 JWTAuthHandler jwtAuthHandler = JWTAuthHandler.create(jwtAuth);
