@@ -71,7 +71,6 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                                         .create("*")
                                         .allowedMethods(Sets.newHashSet(HttpMethod.OPTIONS, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.GET, HttpMethod.PUT))
                                         .allowedHeaders(Sets.newHashSet("X-JWT-TOKEN", "X-XSRF-TOKEN", "Authorization"))
-                                        .allowedHeader("X-XSRF-TOKEN")
                                         .allowCredentials(true);
                 router.route().handler(cors);
                 JsonObject keyStoreConfig = vertx.getOrCreateContext().config().getJsonObject("keyStoreConfig");
