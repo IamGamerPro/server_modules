@@ -70,7 +70,7 @@ public class RouteOrchestratorImp implements RouteOrchestrator {
                 CorsHandler cors = CorsHandler
                                         .create("*")
                                         .allowedMethods(Sets.newHashSet(HttpMethod.OPTIONS, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.GET, HttpMethod.PUT))
-                                        .allowedHeaders(Sets.newHashSet("X-JWT-TOKEN", "X-XSRF-TOKEN", "Authorization"))
+                                        .allowedHeaders(Sets.newHashSet("X-JWT-TOKEN", "X-XSRF-TOKEN", "Authorization", "Content-Type"))
                                         .allowCredentials(true);
                 router.route().handler(cors);
                 JsonObject keyStoreConfig = vertx.getOrCreateContext().config().getJsonObject("keyStoreConfig");
