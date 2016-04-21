@@ -21,6 +21,7 @@ public class BaseUserPageData {
     private String favoriteMusic;
     private String aboutMe;
     private String status;
+    private Avatar avatar;
 
     public String getFirstName() {
         return firstName;
@@ -110,6 +111,14 @@ public class BaseUserPageData {
         this.yb = yb;
     }
 
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "BaseUserPageData{" +
@@ -119,11 +128,12 @@ public class BaseUserPageData {
                 ", mb=" + mb +
                 ", yb=" + yb +
                 ", hometown='" + hometown + '\'' +
-                ", sex='" + sex + '\'' +
+                ", sex=" + sex +
                 ", favoriteGames='" + favoriteGames + '\'' +
                 ", favoriteMusic='" + favoriteMusic + '\'' +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", status='" + status + '\'' +
+                ", avatar=" + avatar +
                 '}';
     }
 
@@ -142,11 +152,12 @@ public class BaseUserPageData {
                 Objects.equals(favoriteGames, that.favoriteGames) &&
                 Objects.equals(favoriteMusic, that.favoriteMusic) &&
                 Objects.equals(aboutMe, that.aboutMe) &&
-                Objects.equals(status, that.status);
+                Objects.equals(status, that.status) &&
+                Objects.equals(avatar, that.avatar);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, db, mb, yb, hometown, sex, favoriteGames, favoriteMusic, aboutMe, status);
+        return Objects.hash(firstName, lastName, db, mb, yb, hometown, sex, favoriteGames, favoriteMusic, aboutMe, status, avatar);
     }
 }
