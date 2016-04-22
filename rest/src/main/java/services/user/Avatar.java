@@ -6,19 +6,19 @@ import java.util.Objects;
  * Created by Sergey Kobets on 21.04.2016.
  */
 public class Avatar {
-    private String xss;
+    private String xxs;
     private String xs;
     private String s;
     private String m;
     private String l;
 
 
-    public String getXss() {
-        return xss;
+    public String getXxs() {
+        return xxs;
     }
 
-    public void setXss(String xss) {
-        this.xss = xss;
+    public void setXxs(String xss) {
+        this.xxs = xss;
     }
 
     public String getXs() {
@@ -56,7 +56,7 @@ public class Avatar {
     @Override
     public String toString() {
         return "Avatar{" +
-                "xss='" + xss + '\'' +
+                "xxs='" + xxs + '\'' +
                 ", xs='" + xs + '\'' +
                 ", s='" + s + '\'' +
                 ", m='" + m + '\'' +
@@ -69,7 +69,7 @@ public class Avatar {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Avatar avatar = (Avatar) o;
-        return Objects.equals(xss, avatar.xss) &&
+        return Objects.equals(xxs, avatar.xxs) &&
                 Objects.equals(xs, avatar.xs) &&
                 Objects.equals(s, avatar.s) &&
                 Objects.equals(m, avatar.m) &&
@@ -78,6 +78,6 @@ public class Avatar {
 
     @Override
     public int hashCode() {
-        return Objects.hash(xss, xs, s, m, l);
+        return Objects.hash(xxs, xs, s, m, l);
     }
 }
