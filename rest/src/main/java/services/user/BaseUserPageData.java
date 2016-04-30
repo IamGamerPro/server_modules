@@ -22,6 +22,7 @@ public class BaseUserPageData {
     private String aboutMe;
     private String status;
     private Avatar avatar;
+    private ThumbRectangle thumbRect;
 
     public String getFirstName() {
         return firstName;
@@ -119,6 +120,14 @@ public class BaseUserPageData {
         this.avatar = avatar;
     }
 
+    public ThumbRectangle getThumbRect() {
+        return thumbRect;
+    }
+
+    public void setThumbRect(ThumbRectangle thumbRect) {
+        this.thumbRect = thumbRect;
+    }
+
     @Override
     public String toString() {
         return "BaseUserPageData{" +
@@ -134,6 +143,7 @@ public class BaseUserPageData {
                 ", aboutMe='" + aboutMe + '\'' +
                 ", status='" + status + '\'' +
                 ", avatar=" + avatar +
+                ", thumbRect=" + thumbRect +
                 '}';
     }
 
@@ -153,11 +163,12 @@ public class BaseUserPageData {
                 Objects.equals(favoriteMusic, that.favoriteMusic) &&
                 Objects.equals(aboutMe, that.aboutMe) &&
                 Objects.equals(status, that.status) &&
-                Objects.equals(avatar, that.avatar);
+                Objects.equals(avatar, that.avatar) &&
+                Objects.equals(thumbRect, that.thumbRect);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, db, mb, yb, hometown, sex, favoriteGames, favoriteMusic, aboutMe, status, avatar);
+        return Objects.hash(firstName, lastName, db, mb, yb, hometown, sex, favoriteGames, favoriteMusic, aboutMe, status, avatar, thumbRect);
     }
 }
