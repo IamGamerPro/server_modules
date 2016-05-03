@@ -113,8 +113,7 @@ public class UserPageDAO {
     public void deleteAvatar(String id, RoutingContext callback) {
         Objects.requireNonNull(id);
         JsonObject query = new JsonObject().put("_id", new JsonObject().put("$oid", id));
-        JsonObject update = new JsonObject();
-        update.put("$unset", "avatar");
+        JsonObject update = new JsonObject().put("$unset", new JsonObject().put("avatar", ""));
         mongoClient.update("users", query, update, res -> {
             if (res.succeeded()) {
                 callback.response().end();
