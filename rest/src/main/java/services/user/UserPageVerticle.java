@@ -35,7 +35,7 @@ public class UserPageVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.get().handler(this::getUserPage);
         router.put().handler(this::updateUserPage);
-        router.delete("/:userName/avatar").handler(this::deleteAvatar);
+        router.delete("/avatar").handler(this::deleteAvatar);
         routeOrchestrator.mountRequiresAuthorizationSubRouter("/user", router);
         vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
     }
