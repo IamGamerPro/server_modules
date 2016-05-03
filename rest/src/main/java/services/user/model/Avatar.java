@@ -1,10 +1,13 @@
 package services.user.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 
 /**
  * Created by Sergey Kobets on 21.04.2016.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Avatar {
     private String xxs;
     private String xs;
