@@ -34,7 +34,7 @@ public class ConfirmationCallbackVerticle extends AbstractVerticle {
                             String user_id = callback.getString("user_id");
                             JsonObject selector = new JsonObject()
                                     .put("_id", new JsonObject().put("$oid", user_id))
-                                    .put("emails.mail", callback.getString("email"));
+                                    .put("emails.email", callback.getString("email"));
                             JsonObject update = new JsonObject()
                                     .put("$set", new JsonObject().put("emails.$.checked", true)
                                     );
