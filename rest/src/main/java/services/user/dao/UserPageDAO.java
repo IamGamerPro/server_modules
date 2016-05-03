@@ -63,6 +63,20 @@ public class UserPageDAO {
             set.put("status", userPageData.getStatus());
         }
 
+        if (userPageData.getTz() != null) {
+            set.put("tz", userPageData.getTz());
+        }
+
+        if (userPageData.getCountry() != null) {
+            set.put("country", userPageData.getCountry());
+        }
+
+        if (userPageData.getLang() != null) {
+            set.put("lang", userPageData.getLang());
+        }
+
+
+
         if (userPageData.getAvatar() != null) {
             Avatar avatar = userPageData.getAvatar();
             if (avatar.getXxs() != null) {
