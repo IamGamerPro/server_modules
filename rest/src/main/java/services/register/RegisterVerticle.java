@@ -196,7 +196,9 @@ public class RegisterVerticle extends AbstractVerticle {
 
     private void register(RoutingContext routingContext) {
         JsonObject registerRequest = routingContext.getBodyAsJson();
-        final String login = registerRequest.getString("login");
+        final String userName = registerRequest.getString("login");
+        final String login = userName.toLowerCase();
+        registerRequest.put("login", login);
         final String password = registerRequest.getString("password");
         final String email = registerRequest.getString("email");
         vertx.<byte[][]>executeBlocking(future -> {
@@ -215,6 +217,7 @@ public class RegisterVerticle extends AbstractVerticle {
                 shared.createCollection("users",
                         v -> {
                             JsonObject document = new JsonObject();
+                            document.put("userName", userName);
                             document.put("login", login);
                             JsonArray emails = new JsonArray().add(
                                     new JsonObject()
