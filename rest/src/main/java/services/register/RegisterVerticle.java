@@ -139,13 +139,13 @@ public class RegisterVerticle extends AbstractVerticle {
                             .put("emails.1",
                                     new JsonObject()
                                             .put("$exists", true))
-                            .put("emails.mail", email);
+                            .put("emails.email", email);
                     JsonObject remove = new JsonObject()
                             .put("$pull",
                                     new JsonObject()
                                             .put("emails",
                                                     new JsonObject()
-                                                            .put("mail", email)));
+                                                            .put("email", email)));
                     shared.update("users", query, remove,
                             event -> routingContext.response().end());
                     return;
@@ -172,7 +172,7 @@ public class RegisterVerticle extends AbstractVerticle {
                             new JsonObject()
                                     .put("$push", new JsonObject().put("emails",
                                             new JsonObject()
-                                                    .put("mail", email)
+                                                    .put("email", email)
                                                     .put("primary", false)
                                                     .put("checked", false)));
                     shared.update("users", query, update, res -> {
@@ -221,7 +221,7 @@ public class RegisterVerticle extends AbstractVerticle {
                             document.put("login", login);
                             JsonArray emails = new JsonArray().add(
                                     new JsonObject()
-                                            .put("mail", email)
+                                            .put("email", email)
                                             .put("primary", true)
                                             .put("checked", false));
                             document.put("emails", emails);
