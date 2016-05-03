@@ -105,7 +105,7 @@ public class UserPageVerticle extends AbstractVerticle {
             String id = request.getParam("id");
             selector.put("_id", id);
         } else if (request.getParam("name") != null) {
-            String name = request.getParam("name");
+            String name = request.getParam("name").toLowerCase();
             selector.put("login", name);
         } else {
             throw new RuntimeException();
