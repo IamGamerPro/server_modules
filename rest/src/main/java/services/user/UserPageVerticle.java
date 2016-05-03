@@ -88,6 +88,9 @@ public class UserPageVerticle extends AbstractVerticle {
             JsonObject result = event.result();
             if (!(currentUser != null && currentUser.equals(result.getString("login")))) {
                 result.remove("emails");
+                result.put("relation", 0);
+            } else {
+                result.put("relation", -1);
             }
             routingContext.response()
                     .putHeader("content-type", "application/json")
