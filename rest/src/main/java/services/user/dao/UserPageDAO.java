@@ -75,8 +75,6 @@ public class UserPageDAO {
             set.put("lang", userPageData.getLang());
         }
 
-
-
         if (userPageData.getAvatar() != null) {
             Avatar avatar = userPageData.getAvatar();
             if (avatar.getXxs() != null) {
