@@ -43,6 +43,8 @@ public class LoginVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.post().handler(requestHandler -> {
             JsonObject authParams = requestHandler.getBodyAsJson();
+            String login = authParams.getString("login").toLowerCase();
+            authParams.put("login", login);
             final Integer authenticationMode =
                     (authParams.getInteger("authenticationMode") != null)
                             ? authParams.getInteger("authenticationMode")
