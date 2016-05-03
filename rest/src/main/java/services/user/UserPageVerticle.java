@@ -35,9 +35,20 @@ public class UserPageVerticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.get().handler(this::getUserPage);
         router.put().handler(this::updateUserPage);
+        router.delete("/:userName/avatar").handler(this::deleteAvatar);
         routeOrchestrator.mountRequiresAuthorizationSubRouter("/user", router);
-
         vertx.createHttpServer().requestHandler(routeOrchestrator::accept).listen(port);
+    }
+
+    private void deleteAvatar(RoutingContext routingContext) {
+        Optional<String> userId = Optional.ofNullable(routingContext.user())
+                .map(User::principal)
+                .map(c -> c.getString("userId"));
+        if (userId.isPresent()) {
+            dao.deleteAvatar(userId.get(), routingContext);
+        } else {
+            routingContext.fail(403);
+        }
     }
 
     private void updateUserPage(RoutingContext routingContext) {
@@ -57,7 +68,7 @@ public class UserPageVerticle extends AbstractVerticle {
         JsonObject config = context.config();
         databaseConfig = config.getJsonObject("databaseConfig");
         port = config.getJsonObject("httServerConfig").getInteger("port");
-        mongoClient =  MongoClient.createShared(vertx, databaseConfig);
+        mongoClient = MongoClient.createShared(vertx, databaseConfig);
         dao = UserPageDAO.getDAO(mongoClient);
         routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
     }

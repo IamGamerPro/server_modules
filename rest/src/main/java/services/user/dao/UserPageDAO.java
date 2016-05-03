@@ -110,5 +110,20 @@ public class UserPageDAO {
         });
     }
 
+    public void deleteAvatar(String id, RoutingContext callback) {
+        Objects.requireNonNull(id);
+        JsonObject query = new JsonObject().put("_id", new JsonObject().put("$oid", id));
+        JsonObject update = new JsonObject();
+        update.put("$unset", "avatar");
+        mongoClient.update("users", query, update, res -> {
+            if (res.succeeded()) {
+                callback.response().end();
+            } else {
+                callback.fail(400);
+            }
+
+        });
+    }
+
 
 }
