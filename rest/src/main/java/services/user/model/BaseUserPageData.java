@@ -21,6 +21,10 @@ public class BaseUserPageData {
     private String favoriteMusic;
     private String aboutMe;
     private String status;
+    private Integer lang;
+    private Double tz;
+    private String country;
+
     private Avatar avatar;
     private ThumbRectangle thumbRect;
 
@@ -128,6 +132,30 @@ public class BaseUserPageData {
         this.thumbRect = thumbRect;
     }
 
+    public Integer getLang() {
+        return lang;
+    }
+
+    public void setLang(Integer lang) {
+        this.lang = lang;
+    }
+
+    public Double getTz() {
+        return tz;
+    }
+
+    public void setTz(Double tz) {
+        this.tz = tz;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     @Override
     public String toString() {
         return "BaseUserPageData{" +
@@ -142,6 +170,9 @@ public class BaseUserPageData {
                 ", favoriteMusic='" + favoriteMusic + '\'' +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", status='" + status + '\'' +
+                ", lang=" + lang +
+                ", tz=" + tz +
+                ", country='" + country + '\'' +
                 ", avatar=" + avatar +
                 ", thumbRect=" + thumbRect +
                 '}';
@@ -151,24 +182,48 @@ public class BaseUserPageData {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         BaseUserPageData that = (BaseUserPageData) o;
-        return Objects.equals(firstName, that.firstName) &&
-                Objects.equals(lastName, that.lastName) &&
-                Objects.equals(db, that.db) &&
-                Objects.equals(mb, that.mb) &&
-                Objects.equals(yb, that.yb) &&
-                Objects.equals(hometown, that.hometown) &&
-                Objects.equals(sex, that.sex) &&
-                Objects.equals(favoriteGames, that.favoriteGames) &&
-                Objects.equals(favoriteMusic, that.favoriteMusic) &&
-                Objects.equals(aboutMe, that.aboutMe) &&
-                Objects.equals(status, that.status) &&
-                Objects.equals(avatar, that.avatar) &&
-                Objects.equals(thumbRect, that.thumbRect);
+
+        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
+        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
+        if (db != null ? !db.equals(that.db) : that.db != null) return false;
+        if (mb != null ? !mb.equals(that.mb) : that.mb != null) return false;
+        if (yb != null ? !yb.equals(that.yb) : that.yb != null) return false;
+        if (hometown != null ? !hometown.equals(that.hometown) : that.hometown != null) return false;
+        if (sex != null ? !sex.equals(that.sex) : that.sex != null) return false;
+        if (favoriteGames != null ? !favoriteGames.equals(that.favoriteGames) : that.favoriteGames != null)
+            return false;
+        if (favoriteMusic != null ? !favoriteMusic.equals(that.favoriteMusic) : that.favoriteMusic != null)
+            return false;
+        if (aboutMe != null ? !aboutMe.equals(that.aboutMe) : that.aboutMe != null) return false;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (lang != null ? !lang.equals(that.lang) : that.lang != null) return false;
+        if (tz != null ? !tz.equals(that.tz) : that.tz != null) return false;
+        if (country != null ? !country.equals(that.country) : that.country != null) return false;
+        if (avatar != null ? !avatar.equals(that.avatar) : that.avatar != null) return false;
+        return thumbRect != null ? thumbRect.equals(that.thumbRect) : that.thumbRect == null;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, db, mb, yb, hometown, sex, favoriteGames, favoriteMusic, aboutMe, status, avatar, thumbRect);
+        int result = firstName != null ? firstName.hashCode() : 0;
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (db != null ? db.hashCode() : 0);
+        result = 31 * result + (mb != null ? mb.hashCode() : 0);
+        result = 31 * result + (yb != null ? yb.hashCode() : 0);
+        result = 31 * result + (hometown != null ? hometown.hashCode() : 0);
+        result = 31 * result + (sex != null ? sex.hashCode() : 0);
+        result = 31 * result + (favoriteGames != null ? favoriteGames.hashCode() : 0);
+        result = 31 * result + (favoriteMusic != null ? favoriteMusic.hashCode() : 0);
+        result = 31 * result + (aboutMe != null ? aboutMe.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (lang != null ? lang.hashCode() : 0);
+        result = 31 * result + (tz != null ? tz.hashCode() : 0);
+        result = 31 * result + (country != null ? country.hashCode() : 0);
+        result = 31 * result + (avatar != null ? avatar.hashCode() : 0);
+        result = 31 * result + (thumbRect != null ? thumbRect.hashCode() : 0);
+        return result;
     }
 }
