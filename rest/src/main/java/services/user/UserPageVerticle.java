@@ -11,6 +11,8 @@ import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.routing.RouteOrchestrator;
+import services.user.dao.UserPageDAO;
+import services.user.model.BaseUserPageData;
 
 import java.nio.charset.Charset;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public class UserPageVerticle extends AbstractVerticle {
     private Integer port;
     private RouteOrchestrator routeOrchestrator;
     private final JsonObject baseExcludeSelector = new JsonObject("{\"password\":0, \"salt\":0}");
+    private UserPageDAO dao;
 
     @Override
     public void start() throws Exception {
@@ -43,17 +46,7 @@ public class UserPageVerticle extends AbstractVerticle {
                 .map(c -> c.getString("userId"));
         if (userId.isPresent()) {
             BaseUserPageData baseUserPageData = Json.decodeValue(routingContext.getBody().toString(Charset.forName("UTF-8")), BaseUserPageData.class);
-            JsonObject query = new JsonObject().put("_id", new JsonObject().put("$oid", userId.get()));
-            /*TODO нужна валидация ! */
-            JsonObject set = new JsonObject().put("$set", new JsonObject(Json.encode(baseUserPageData)));
-            mongoClient.update("users", query, set, res -> {
-                if (res.succeeded()) {
-                    routingContext.response().end();
-                } else {
-                    routingContext.fail(400);
-                }
-
-            });
+            dao.update(baseUserPageData, userId.get(), routingContext);
         } else {
             routingContext.fail(403);
         }
@@ -64,7 +57,8 @@ public class UserPageVerticle extends AbstractVerticle {
         JsonObject config = context.config();
         databaseConfig = config.getJsonObject("databaseConfig");
         port = config.getJsonObject("httServerConfig").getInteger("port");
-        mongoClient = MongoClient.createShared(vertx, databaseConfig);
+        mongoClient =  MongoClient.createShared(vertx, databaseConfig);
+        dao = UserPageDAO.getDAO(mongoClient);
         routeOrchestrator = RouteOrchestrator.getInstance(vertx, "/api");
     }
 

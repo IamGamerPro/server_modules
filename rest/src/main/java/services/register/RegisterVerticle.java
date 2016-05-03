@@ -14,7 +14,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import pro.iamgamer.core.security.PasswordUtils;
 import pro.iamgamer.routing.RouteOrchestrator;
-import services.Responses;
+import services.tools.Responses;
 
 import java.util.Arrays;
 import java.util.Optional;

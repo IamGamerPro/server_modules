@@ -1,4 +1,4 @@
-package services.user;
+package services.user.model;
 
 import java.util.Objects;
 
